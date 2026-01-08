@@ -33,6 +33,9 @@ theme:
 
 plugins:
   - search
+  - mkdocs-jupyter:
+      include_source: true
+      execute: true
   - mkdocstrings:
       handlers:
         python:
@@ -57,9 +60,8 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting Started: getting-started.md
-  - User Guide:
-      - Dimension Assignment: guide/dimension-assignment.md
-      - Plot Types: guide/plot-types.md
-      - Customization: guide/customization.md
+  - Getting Started: getting-started.ipynb
+  - Examples:
+      - Plot Types: examples/plot-types.ipynb
+      - Advanced Usage: examples/advanced.ipynb
   - API Reference: api.md
