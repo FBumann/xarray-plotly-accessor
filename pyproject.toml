@@ -1,6 +1,6 @@
 [project]
 name = "xarray_plotly"
-version = "0.0.1"
+dynamic = ["version"]
 description = "Interactive Plotly Express plotting accessor for xarray"
 readme = "README.md"
 license = { text = "MIT" }
@@ -51,11 +51,14 @@ docs = [
 # Entry point for xarray to auto-register the accessor (xarray >= 2024.01)
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0.0", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
 
-[tool.hatch.build.targets.wheel]
-packages = ["xarray_plotly"]
+[tool.setuptools.packages.find]
+include = ["xarray_plotly*"]
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
 
 [tool.ruff]
 target-version = "py310"
