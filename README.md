@@ -24,7 +24,7 @@ uv add xarray_plotly
 ```python
 import xarray as xr
 import numpy as np
-import xarray_plotly  # registers the accessor
+from xarray_plotly import xpx
 
 # Create sample data
 da = xr.DataArray(
@@ -40,12 +40,28 @@ da = xr.DataArray(
 
 # Create an interactive line plot
 # Dimensions auto-assign: time→x, city→color, scenario→facet_col
-fig = da.plotly.line()
+fig = xpx(da).line()
 fig.show()
 
 # Easy customization
 fig.update_layout(title="Temperature Projections", template="plotly_dark")
 ```
+
+## Usage Styles
+
+xarray_plotly supports two equivalent usage styles:
+
+```python
+# Function style (recommended) - full IDE code completion
+from xarray_plotly import xpx
+fig = xpx(da).line()
+
+# Accessor style - works but no IDE completion
+import xarray_plotly
+fig = da.plotly.line()
+```
+
+The `xpx()` function is recommended as it provides full IDE code completion and type hints.
 
 ## Features
 
@@ -62,13 +78,13 @@ Dimensions are automatically assigned to plot "slots" based on their order:
 ```python
 # dims: (time, city, scenario)
 # auto-assigns: time→x, city→color, scenario→facet_col
-da.plotly.line()
+xpx(da).line()
 
 # Override with explicit assignments
-da.plotly.line(x="time", color="scenario", facet_col="city")
+xpx(da).line(x="time", color="scenario", facet_col="city")
 
 # Skip a slot with None
-da.plotly.line(color=None)  # time→x, city→facet_col
+xpx(da).line(color=None)  # time→x, city→facet_col
 ```
 
 ## Available Methods

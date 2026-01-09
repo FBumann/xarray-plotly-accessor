@@ -2,7 +2,7 @@
 
 **Interactive Plotly Express plotting accessor for xarray**
 
-xarray_plotly provides a `plotly` accessor for xarray DataArray objects that enables interactive plotting using Plotly Express. It automatically assigns dimensions to plot slots based on their order, making it easy to create rich, interactive visualizations with minimal code.
+xarray_plotly provides interactive plotting for xarray DataArray objects using Plotly Express. It automatically assigns dimensions to plot slots based on their order, making it easy to create rich, interactive visualizations with minimal code.
 
 ## Features
 
@@ -11,13 +11,14 @@ xarray_plotly provides a `plotly` accessor for xarray DataArray objects that ena
 - **Easy customization**: Returns Plotly `Figure` objects for further modification
 - **Multiple plot types**: Line, bar, area, scatter, box, and heatmap plots
 - **Faceting and animation**: Built-in support for subplot grids and animated time series
+- **Full IDE support**: The `xpx()` function provides complete code completion and type hints
 
 ## Quick Example
 
 ```python
 import xarray as xr
 import numpy as np
-import xarray_plotly  # registers the accessor
+from xarray_plotly import xpx
 
 # Create sample data
 da = xr.DataArray(
@@ -33,7 +34,7 @@ da = xr.DataArray(
 
 # Create an interactive line plot
 # Dimensions auto-assign: time->x, city->color, scenario->facet_col
-fig = da.plotly.line()
+fig = xpx(da).line()
 fig.show()
 
 # Easy customization
@@ -42,6 +43,22 @@ fig.update_layout(
     template="plotly_dark",
 )
 ```
+
+## Usage Styles
+
+xarray_plotly supports two equivalent usage styles:
+
+```python
+# Function style (recommended) - full IDE code completion
+from xarray_plotly import xpx
+fig = xpx(da).line()
+
+# Accessor style - works but no IDE completion
+import xarray_plotly
+fig = da.plotly.line()
+```
+
+The `xpx()` function is recommended as it provides full IDE code completion and type hints.
 
 ## Installation
 
