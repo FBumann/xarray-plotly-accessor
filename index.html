@@ -521,7 +521,7 @@
 <a class="headerlink" href="#xarray_plotly" title="Permanent link">¶</a></h2>
 <div class="doc doc-contents first">
 <p>Interactive Plotly Express plotting for xarray.</p>
-<p>This package provides a <code>plotly</code> accessor for xarray DataArray objects,
+<p>This package provides a <code>plotly</code> accessor for xarray DataArray and Dataset objects,
 enabling interactive visualization with Plotly Express.</p>
 <details class="features" open="">
 <summary>Features</summary>
@@ -529,6 +529,7 @@ enabling interactive visualization with Plotly Express.</p>
 <li><strong>Interactive plots</strong>: Zoom, pan, hover, toggle traces</li>
 <li><strong>Automatic dimension assignment</strong>: Dimensions fill slots (x, color, facet) by position</li>
 <li><strong>Multiple plot types</strong>: line, bar, area, scatter, box, imshow</li>
+<li><strong>Dataset support</strong>: Plot all variables at once with "variable" dimension</li>
 <li><strong>Faceting and animation</strong>: Built-in subplot grids and animated plots</li>
 <li><strong>Customizable</strong>: Returns Plotly Figure objects for further modification</li>
 </ul>
@@ -538,10 +539,12 @@ enabling interactive visualization with Plotly Express.</p>
 <p>Accessor style::</p>
 <div class="highlight"><pre><span></span><code>import xarray_plotly
 fig = da.plotly.line()
+fig = ds.plotly.line()  # Dataset: all variables
 </code></pre></div>
 <p>Function style (recommended for IDE completion)::</p>
 <div class="highlight"><pre><span></span><code>from xarray_plotly import xpx
 fig = xpx(da).line()
+fig = xpx(ds).line()  # Dataset: all variables
 </code></pre></div>
 </details>
 <details class="example" open="">
@@ -557,6 +560,11 @@ fig = xpx(da).line()
 <a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">xpx</span><span class="p">(</span><span class="n">da</span><span class="p">)</span><span class="o">.</span><span class="n">line</span><span class="p">()</span>  <span class="c1"># Auto: time-&gt;x, city-&gt;color, scenario-&gt;facet_col</span>
 <a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">xpx</span><span class="p">(</span><span class="n">da</span><span class="p">)</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">"time"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"scenario"</span><span class="p">)</span>  <span class="c1"># Explicit</span>
 <a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">xpx</span><span class="p">(</span><span class="n">da</span><span class="p">)</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># Skip slot</span>
+<a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a>
+<a href="#__codelineno-0-13" id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="c1"># Dataset: plot all variables (accessor or xpx)</span>
+<a href="#__codelineno-0-14" id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">({</span><span class="s2">"temp"</span><span class="p">:</span> <span class="n">da</span><span class="p">,</span> <span class="s2">"precip"</span><span class="p">:</span> <span class="n">da</span><span class="p">})</span>
+<a href="#__codelineno-0-15" id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">xpx</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span><span class="o">.</span><span class="n">line</span><span class="p">()</span>  <span class="c1"># "variable" dimension for color</span>
+<a href="#__codelineno-0-16" id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">xpx</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">facet_col</span><span class="o">=</span><span class="s2">"variable"</span><span class="p">)</span>  <span class="c1"># Facet by variable</span>
 </code></pre></div>
 </details>
 <div class="doc doc-children">

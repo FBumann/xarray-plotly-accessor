@@ -858,11 +858,15 @@
 <h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">¶</a></h1>
 <div class="doc doc-object doc-function">
 <h2 class="doc doc-heading" id="xarray_plotly.xpx">
-<code class="highlight language-python"><span class="n">xarray_plotly</span><span class="o">.</span><span class="n">xpx</span><span class="p">(</span><span class="n">da</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">xarray_plotly</span><span class="o">.</span><span class="n">xpx</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
 <a class="headerlink" href="#xarray_plotly.xpx" title="Permanent link">¶</a></h2>
+<div class="doc-overloads">
+<div class="doc-signature highlight"><pre><span></span><code><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nf">xpx</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">DataArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataArrayPlotlyAccessor</span>
+</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nf">xpx</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetPlotlyAccessor</span>
+</code></pre></div> </div>
 <div class="doc doc-contents first">
-<p>Get the plotly accessor for a DataArray with full IDE code completion.</p>
-<p>This is an alternative to <code>da.plotly</code> that provides proper type hints
+<p>Get the plotly accessor for a DataArray or Dataset with full IDE code completion.</p>
+<p>This is an alternative to <code>da.plotly</code> / <code>ds.plotly</code> that provides proper type hints
 and code completion in IDEs.</p>
 <p><span class="doc-section-title">Parameters:</span></p>
 <table>
@@ -877,14 +881,14 @@ and code completion in IDEs.</p>
 <tbody>
 <tr class="doc-section-item">
 <td>
-<code>da</code>
+<code>data</code>
 </td>
 <td>
-<code><span title="xarray.DataArray">DataArray</span></code>
+<code><span title="xarray.DataArray">DataArray</span> | <span title="xarray.Dataset">Dataset</span></code>
 </td>
 <td>
 <div class="doc-md-description">
-<p>The DataArray to plot.</p>
+<p>The DataArray or Dataset to plot.</p>
 </div>
 </td>
 <td>
@@ -904,7 +908,7 @@ and code completion in IDEs.</p>
 <tbody>
 <tr class="doc-section-item">
 <td>
-<code><a class="autorefs autorefs-internal" title="xarray_plotly.accessor.DataArrayPlotlyAccessor" href="#xarray_plotly.accessor.DataArrayPlotlyAccessor">DataArrayPlotlyAccessor</a></code>
+<code><a class="autorefs autorefs-internal" title="xarray_plotly.accessor.DataArrayPlotlyAccessor" href="#xarray_plotly.accessor.DataArrayPlotlyAccessor">DataArrayPlotlyAccessor</a> | <span title="xarray_plotly.accessor.DatasetPlotlyAccessor">DatasetPlotlyAccessor</span></code>
 </td>
 <td>
 <div class="doc-md-description">
@@ -917,48 +921,70 @@ and code completion in IDEs.</p>
 <details class="example" open="">
 <summary>Example</summary>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">xarray_plotly</span><span class="w"> </span><span class="kn">import</span> <span class="n">xpx</span>
-<a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">xpx</span><span class="p">(</span><span class="n">da</span><span class="p">)</span><span class="o">.</span><span class="n">line</span><span class="p">()</span>  <span class="c1"># Full code completion works here</span>
+<a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a>
+<a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="c1"># DataArray</span>
+<a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">xpx</span><span class="p">(</span><span class="n">da</span><span class="p">)</span><span class="o">.</span><span class="n">line</span><span class="p">()</span>  <span class="c1"># Full code completion works here</span>
+<a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a>
+<a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="c1"># Dataset</span>
+<a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">xpx</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span><span class="o">.</span><span class="n">line</span><span class="p">()</span>  <span class="c1"># Plots all variables</span>
+<a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">xpx</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">var</span><span class="o">=</span><span class="s2">"temperature"</span><span class="p">)</span>  <span class="c1"># Single variable</span>
 </code></pre></div>
 </details>
 <details class="quote">
 <summary>Source code in <code>xarray_plotly/__init__.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-57">57</a></span>
-<span class="normal"><a href="#__codelineno-0-58">58</a></span>
-<span class="normal"><a href="#__codelineno-0-59">59</a></span>
-<span class="normal"><a href="#__codelineno-0-60">60</a></span>
-<span class="normal"><a href="#__codelineno-0-61">61</a></span>
-<span class="normal"><a href="#__codelineno-0-62">62</a></span>
-<span class="normal"><a href="#__codelineno-0-63">63</a></span>
-<span class="normal"><a href="#__codelineno-0-64">64</a></span>
-<span class="normal"><a href="#__codelineno-0-65">65</a></span>
-<span class="normal"><a href="#__codelineno-0-66">66</a></span>
-<span class="normal"><a href="#__codelineno-0-67">67</a></span>
-<span class="normal"><a href="#__codelineno-0-68">68</a></span>
-<span class="normal"><a href="#__codelineno-0-69">69</a></span>
-<span class="normal"><a href="#__codelineno-0-70">70</a></span>
-<span class="normal"><a href="#__codelineno-0-71">71</a></span>
-<span class="normal"><a href="#__codelineno-0-72">72</a></span>
-<span class="normal"><a href="#__codelineno-0-73">73</a></span>
-<span class="normal"><a href="#__codelineno-0-74">74</a></span>
-<span class="normal"><a href="#__codelineno-0-75">75</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="k">def</span><span class="w"> </span><span class="nf">xpx</span><span class="p">(</span><span class="n">da</span><span class="p">:</span> <span class="n">DataArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataArrayPlotlyAccessor</span><span class="p">:</span>
-<a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="w">    </span><span class="sd">"""Get the plotly accessor for a DataArray with full IDE code completion.</span>
-<a id="__codelineno-0-59" name="__codelineno-0-59"></a>
-<a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="sd">    This is an alternative to `da.plotly` that provides proper type hints</span>
-<a id="__codelineno-0-61" name="__codelineno-0-61"></a><span class="sd">    and code completion in IDEs.</span>
-<a id="__codelineno-0-62" name="__codelineno-0-62"></a>
-<a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="sd">        da: The DataArray to plot.</span>
-<a id="__codelineno-0-65" name="__codelineno-0-65"></a>
-<a id="__codelineno-0-66" name="__codelineno-0-66"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="sd">        The accessor with plotting methods (line, bar, area, scatter, box, imshow).</span>
-<a id="__codelineno-0-68" name="__codelineno-0-68"></a>
-<a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="sd">    Example:</span>
-<a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="sd">        ```python</span>
-<a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">        from xarray_plotly import xpx</span>
-<a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="sd">        fig = xpx(da).line()  # Full code completion works here</span>
-<a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">        ```</span>
-<a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">    """</span>
-<a id="__codelineno-0-75" name="__codelineno-0-75"></a>    <span class="k">return</span> <span class="n">DataArrayPlotlyAccessor</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-75"> 75</a></span>
+<span class="normal"><a href="#__codelineno-0-76"> 76</a></span>
+<span class="normal"><a href="#__codelineno-0-77"> 77</a></span>
+<span class="normal"><a href="#__codelineno-0-78"> 78</a></span>
+<span class="normal"><a href="#__codelineno-0-79"> 79</a></span>
+<span class="normal"><a href="#__codelineno-0-80"> 80</a></span>
+<span class="normal"><a href="#__codelineno-0-81"> 81</a></span>
+<span class="normal"><a href="#__codelineno-0-82"> 82</a></span>
+<span class="normal"><a href="#__codelineno-0-83"> 83</a></span>
+<span class="normal"><a href="#__codelineno-0-84"> 84</a></span>
+<span class="normal"><a href="#__codelineno-0-85"> 85</a></span>
+<span class="normal"><a href="#__codelineno-0-86"> 86</a></span>
+<span class="normal"><a href="#__codelineno-0-87"> 87</a></span>
+<span class="normal"><a href="#__codelineno-0-88"> 88</a></span>
+<span class="normal"><a href="#__codelineno-0-89"> 89</a></span>
+<span class="normal"><a href="#__codelineno-0-90"> 90</a></span>
+<span class="normal"><a href="#__codelineno-0-91"> 91</a></span>
+<span class="normal"><a href="#__codelineno-0-92"> 92</a></span>
+<span class="normal"><a href="#__codelineno-0-93"> 93</a></span>
+<span class="normal"><a href="#__codelineno-0-94"> 94</a></span>
+<span class="normal"><a href="#__codelineno-0-95"> 95</a></span>
+<span class="normal"><a href="#__codelineno-0-96"> 96</a></span>
+<span class="normal"><a href="#__codelineno-0-97"> 97</a></span>
+<span class="normal"><a href="#__codelineno-0-98"> 98</a></span>
+<span class="normal"><a href="#__codelineno-0-99"> 99</a></span>
+<span class="normal"><a href="#__codelineno-0-100">100</a></span>
+<span class="normal"><a href="#__codelineno-0-101">101</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="k">def</span><span class="w"> </span><span class="nf">xpx</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">DataArray</span> <span class="o">|</span> <span class="n">Dataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataArrayPlotlyAccessor</span> <span class="o">|</span> <span class="n">DatasetPlotlyAccessor</span><span class="p">:</span>
+<a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="w">    </span><span class="sd">"""Get the plotly accessor for a DataArray or Dataset with full IDE code completion.</span>
+<a id="__codelineno-0-77" name="__codelineno-0-77"></a>
+<a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">    This is an alternative to `da.plotly` / `ds.plotly` that provides proper type hints</span>
+<a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">    and code completion in IDEs.</span>
+<a id="__codelineno-0-80" name="__codelineno-0-80"></a>
+<a id="__codelineno-0-81" name="__codelineno-0-81"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-82" name="__codelineno-0-82"></a><span class="sd">        data: The DataArray or Dataset to plot.</span>
+<a id="__codelineno-0-83" name="__codelineno-0-83"></a>
+<a id="__codelineno-0-84" name="__codelineno-0-84"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-85" name="__codelineno-0-85"></a><span class="sd">        The accessor with plotting methods (line, bar, area, scatter, box, imshow).</span>
+<a id="__codelineno-0-86" name="__codelineno-0-86"></a>
+<a id="__codelineno-0-87" name="__codelineno-0-87"></a><span class="sd">    Example:</span>
+<a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="sd">        ```python</span>
+<a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="sd">        from xarray_plotly import xpx</span>
+<a id="__codelineno-0-90" name="__codelineno-0-90"></a>
+<a id="__codelineno-0-91" name="__codelineno-0-91"></a><span class="sd">        # DataArray</span>
+<a id="__codelineno-0-92" name="__codelineno-0-92"></a><span class="sd">        fig = xpx(da).line()  # Full code completion works here</span>
+<a id="__codelineno-0-93" name="__codelineno-0-93"></a>
+<a id="__codelineno-0-94" name="__codelineno-0-94"></a><span class="sd">        # Dataset</span>
+<a id="__codelineno-0-95" name="__codelineno-0-95"></a><span class="sd">        fig = xpx(ds).line()  # Plots all variables</span>
+<a id="__codelineno-0-96" name="__codelineno-0-96"></a><span class="sd">        fig = xpx(ds).line(var="temperature")  # Single variable</span>
+<a id="__codelineno-0-97" name="__codelineno-0-97"></a><span class="sd">        ```</span>
+<a id="__codelineno-0-98" name="__codelineno-0-98"></a><span class="sd">    """</span>
+<a id="__codelineno-0-99" name="__codelineno-0-99"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
+<a id="__codelineno-0-100" name="__codelineno-0-100"></a>        <span class="k">return</span> <span class="n">DatasetPlotlyAccessor</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<a id="__codelineno-0-101" name="__codelineno-0-101"></a>    <span class="k">return</span> <span class="n">DataArrayPlotlyAccessor</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 </div>
