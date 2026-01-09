@@ -6,7 +6,7 @@ Thanks for your interest in contributing!
 
 ```bash
 # Clone the repo
-git clone https://github.com/felix/xarray_plotly.git
+git clone https://github.com/FBumann/xarray_plotly.git
 cd xarray_plotly
 
 # Install with dev dependencies
@@ -42,11 +42,11 @@ uv run ruff format .
 
 ## Releases
 
-Releases are automated via GitHub Actions. To create a release:
+Releases are automated via GitHub Actions. Version is determined from git tags via setuptools_scm.
 
-1. Update version in `pyproject.toml` and `xarray_plotly/__init__.py`
-2. Commit: `git commit -m "Bump version to X.Y.Z"`
-3. Tag: `git tag vX.Y.Z`
-4. Push: `git push && git push --tags`
+To create a release:
+
+1. Tag: `git tag v0.1.0`
+2. Push: `git push && git push --tags`
 
 The CI will automatically publish to PyPI and deploy updated docs.

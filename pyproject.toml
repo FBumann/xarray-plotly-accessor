@@ -26,9 +26,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/felix/xarray_plotly"
-Documentation = "https://felix.github.io/xarray_plotly"
-Repository = "https://github.com/felix/xarray_plotly"
+Homepage = "https://github.com/FBumann/xarray_plotly"
+Documentation = "https://fbumann.github.io/xarray_plotly"
+Repository = "https://github.com/FBumann/xarray_plotly"
 
 [project.optional-dependencies]
 dev = [

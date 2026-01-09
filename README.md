@@ -127,7 +127,7 @@ with config.set_options(label_include_units=False):
 
 ## Documentation
 
-Full documentation with examples: [https://felix.github.io/xarray_plotly](https://felix.github.io/xarray_plotly)
+Full documentation with examples: [https://fbumann.github.io/xarray_plotly](https://fbumann.github.io/xarray_plotly)
 
 ## License
 
