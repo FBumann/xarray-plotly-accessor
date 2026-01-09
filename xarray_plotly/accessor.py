@@ -349,9 +349,27 @@ class DatasetPlotlyAccessor:
         return list(self.__all__) + list(super().__dir__())
 
     def _get_dataarray(self, var: str | None) -> DataArray:
-        """Get DataArray from Dataset, either single var or all via to_array()."""
+        """Get DataArray from Dataset, either single var or all via to_array().
+
+        When combining all variables, "variable" is placed at the position
+        specified by config.dataset_variable_position (default 1, second position).
+        """
         if var is None:
-            return self._ds.to_array(dim="variable")
+            from xarray_plotly.config import _options
+
+            da = self._ds.to_array(dim="variable")
+            pos = _options.dataset_variable_position
+            # Move "variable" to configured position
+            if len(da.dims) > 1 and pos != 0:
+                dims = list(da.dims)
+                dims.remove("variable")
+                # Handle negative indices and bounds
+                if pos < 0:
+                    dims.append("variable")
+                else:
+                    dims.insert(min(pos, len(dims)), "variable")
+                da = da.transpose(*dims)
+            return da
         return self._ds[var]
 
     def line(
