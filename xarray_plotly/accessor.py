@@ -4,7 +4,7 @@ Accessor classes for Plotly Express plotting on DataArray and Dataset.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from xarray_plotly import plotting
 from xarray_plotly.common import SlotValue, auto
@@ -32,12 +32,14 @@ class DataArrayPlotlyAccessor:
     >>> fig.update_layout(title="My Plot")
     """
 
-    _da: DataArray
-
-    __slots__ = ("_da",)
+    __all__: ClassVar = ["line", "bar", "area", "scatter", "box", "imshow"]
 
     def __init__(self, darray: DataArray) -> None:
         self._da = darray
+
+    def __dir__(self) -> list[str]:
+        """List available plot methods."""
+        return list(self.__all__) + list(super().__dir__())
 
     def line(
         self,
