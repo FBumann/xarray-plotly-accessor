@@ -27,7 +27,7 @@ Examples
 
 from importlib.metadata import version
 
-from xarray import register_dataarray_accessor
+from xarray import DataArray, register_dataarray_accessor
 
 from xarray_plotly.accessor import DataArrayPlotlyAccessor
 from xarray_plotly.common import SLOT_ORDERS, auto
@@ -36,7 +36,34 @@ __all__ = [
     "DataArrayPlotlyAccessor",
     "SLOT_ORDERS",
     "auto",
+    "xpx",
 ]
+
+
+def xpx(da: DataArray) -> DataArrayPlotlyAccessor:
+    """
+    Get the plotly accessor for a DataArray with full IDE code completion.
+
+    This is an alternative to `da.plotly` that provides proper type hints
+    and code completion in IDEs.
+
+    Parameters
+    ----------
+    da : DataArray
+        The DataArray to plot.
+
+    Returns
+    -------
+    DataArrayPlotlyAccessor
+        The accessor with plotting methods.
+
+    Examples
+    --------
+    >>> from xarray_plotly import xpx
+    >>> fig = xpx(da).line()  # Full code completion works here
+    """
+    return DataArrayPlotlyAccessor(da)
+
 
 __version__ = version("xarray_plotly")
 
