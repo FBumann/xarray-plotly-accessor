@@ -1,6 +1,4 @@
-"""
-Accessor classes for Plotly Express plotting on DataArray and Dataset.
-"""
+"""Accessor classes for Plotly Express plotting on DataArray."""
 
 from typing import Any, ClassVar
 
@@ -12,41 +10,27 @@ from xarray_plotly.common import SlotValue, auto
 
 
 class DataArrayPlotlyAccessor:
-    """
-    Plotly Express plotting accessor for xarray DataArray.
+    """Plotly Express plotting accessor for xarray DataArray.
 
     Dimensions are automatically assigned to plot slots by position.
     All methods return Plotly Figure objects for interactive visualization.
 
     Available methods: line, bar, area, scatter, box, imshow
 
-    Parameters
-    ----------
-    darray : DataArray
-        The DataArray to plot.
+    Args:
+        darray: The DataArray to plot.
 
-    Examples
-    --------
-    >>> import xarray as xr
-    >>> import numpy as np
-    >>> da = xr.DataArray(np.random.rand(10, 3), dims=["time", "city"])
+    Example:
+        ```python
+        import xarray as xr
+        import numpy as np
 
-    Auto-assign dimensions to slots:
-
-    >>> fig = da.plotly.line()  # time->x, city->color
-
-    Explicit slot assignment:
-
-    >>> fig = da.plotly.line(color="time", x="city")
-
-    Skip a slot with None:
-
-    >>> fig = da.plotly.line(color=None)  # time->x, city->line_dash
-
-    Customize the returned Figure:
-
-    >>> fig = da.plotly.line()
-    >>> fig.update_layout(title="My Plot", template="plotly_dark")
+        da = xr.DataArray(np.random.rand(10, 3), dims=["time", "city"])
+        fig = da.plotly.line()  # Auto: time->x, city->color
+        fig = da.plotly.line(color="time", x="city")  # Explicit
+        fig = da.plotly.line(color=None)  # Skip slot
+        fig.update_layout(title="My Plot")  # Customize
+        ```
     """
 
     __all__: ClassVar = ["line", "bar", "area", "scatter", "box", "imshow"]
@@ -70,35 +54,22 @@ class DataArrayPlotlyAccessor:
         animation_frame: SlotValue = auto,
         **px_kwargs: Any,
     ) -> go.Figure:
-        """
-        Create an interactive line plot using Plotly Express.
+        """Create an interactive line plot.
 
-        The y-axis always shows the DataArray values. Dimensions are assigned
-        to other slots by their order:
-        x -> color -> line_dash -> symbol -> facet_col -> facet_row -> animation_frame
+        Slot order: x -> color -> line_dash -> symbol -> facet_col -> facet_row -> animation_frame
 
-        Parameters
-        ----------
-        x
-            Dimension for x-axis. Default: first dimension.
-        color
-            Dimension for color grouping. Default: second dimension.
-        line_dash
-            Dimension for line dash style. Default: third dimension.
-        symbol
-            Dimension for marker symbol. Default: fourth dimension.
-        facet_col
-            Dimension for subplot columns. Default: fifth dimension.
-        facet_row
-            Dimension for subplot rows. Default: sixth dimension.
-        animation_frame
-            Dimension for animation. Default: seventh dimension.
-        **px_kwargs
-            Additional arguments passed to `plotly.express.line()`.
+        Args:
+            x: Dimension for x-axis. Default: first dimension.
+            color: Dimension for color grouping. Default: second dimension.
+            line_dash: Dimension for line dash style. Default: third dimension.
+            symbol: Dimension for marker symbol. Default: fourth dimension.
+            facet_col: Dimension for subplot columns. Default: fifth dimension.
+            facet_row: Dimension for subplot rows. Default: sixth dimension.
+            animation_frame: Dimension for animation. Default: seventh dimension.
+            **px_kwargs: Additional arguments passed to `plotly.express.line()`.
 
-        Returns
-        -------
-        plotly.graph_objects.Figure
+        Returns:
+            Interactive Plotly Figure.
         """
         return plotting.line(
             self._da,
@@ -123,33 +94,21 @@ class DataArrayPlotlyAccessor:
         animation_frame: SlotValue = auto,
         **px_kwargs: Any,
     ) -> go.Figure:
-        """
-        Create an interactive bar chart using Plotly Express.
+        """Create an interactive bar chart.
 
-        The y-axis always shows the DataArray values. Dimensions are assigned
-        to other slots by their order:
-        x -> color -> pattern_shape -> facet_col -> facet_row -> animation_frame
+        Slot order: x -> color -> pattern_shape -> facet_col -> facet_row -> animation_frame
 
-        Parameters
-        ----------
-        x
-            Dimension for x-axis. Default: first dimension.
-        color
-            Dimension for color grouping. Default: second dimension.
-        pattern_shape
-            Dimension for bar fill pattern. Default: third dimension.
-        facet_col
-            Dimension for subplot columns. Default: fourth dimension.
-        facet_row
-            Dimension for subplot rows. Default: fifth dimension.
-        animation_frame
-            Dimension for animation. Default: sixth dimension.
-        **px_kwargs
-            Additional arguments passed to `plotly.express.bar()`.
+        Args:
+            x: Dimension for x-axis. Default: first dimension.
+            color: Dimension for color grouping. Default: second dimension.
+            pattern_shape: Dimension for bar fill pattern. Default: third dimension.
+            facet_col: Dimension for subplot columns. Default: fourth dimension.
+            facet_row: Dimension for subplot rows. Default: fifth dimension.
+            animation_frame: Dimension for animation. Default: sixth dimension.
+            **px_kwargs: Additional arguments passed to `plotly.express.bar()`.
 
-        Returns
-        -------
-        plotly.graph_objects.Figure
+        Returns:
+            Interactive Plotly Figure.
         """
         return plotting.bar(
             self._da,
@@ -173,33 +132,21 @@ class DataArrayPlotlyAccessor:
         animation_frame: SlotValue = auto,
         **px_kwargs: Any,
     ) -> go.Figure:
-        """
-        Create an interactive stacked area chart using Plotly Express.
+        """Create an interactive stacked area chart.
 
-        The y-axis always shows the DataArray values. Dimensions are assigned
-        to other slots by their order:
-        x -> color -> pattern_shape -> facet_col -> facet_row -> animation_frame
+        Slot order: x -> color -> pattern_shape -> facet_col -> facet_row -> animation_frame
 
-        Parameters
-        ----------
-        x
-            Dimension for x-axis. Default: first dimension.
-        color
-            Dimension for color/stacking. Default: second dimension.
-        pattern_shape
-            Dimension for fill pattern. Default: third dimension.
-        facet_col
-            Dimension for subplot columns. Default: fourth dimension.
-        facet_row
-            Dimension for subplot rows. Default: fifth dimension.
-        animation_frame
-            Dimension for animation. Default: sixth dimension.
-        **px_kwargs
-            Additional arguments passed to `plotly.express.area()`.
+        Args:
+            x: Dimension for x-axis. Default: first dimension.
+            color: Dimension for color/stacking. Default: second dimension.
+            pattern_shape: Dimension for fill pattern. Default: third dimension.
+            facet_col: Dimension for subplot columns. Default: fourth dimension.
+            facet_row: Dimension for subplot rows. Default: fifth dimension.
+            animation_frame: Dimension for animation. Default: sixth dimension.
+            **px_kwargs: Additional arguments passed to `plotly.express.area()`.
 
-        Returns
-        -------
-        plotly.graph_objects.Figure
+        Returns:
+            Interactive Plotly Figure.
         """
         return plotting.area(
             self._da,
@@ -224,37 +171,26 @@ class DataArrayPlotlyAccessor:
         animation_frame: SlotValue = auto,
         **px_kwargs: Any,
     ) -> go.Figure:
-        """
-        Create an interactive scatter plot using Plotly Express.
+        """Create an interactive scatter plot.
 
         By default, y-axis shows the DataArray values. Set y to a dimension
-        name to create dimension-vs-dimension plots (e.g., lat vs lon colored
-        by value).
+        name to create dimension-vs-dimension plots (e.g., lat vs lon).
 
-        Parameters
-        ----------
-        x
-            Dimension for x-axis. Default: first dimension.
-        y
-            What to plot on y-axis. Default "value" uses DataArray values.
-            Can be a dimension name for dimension vs dimension plots.
-        color
-            Dimension for color grouping. Default: second dimension.
-            Use "value" to color by DataArray values (useful with y=dimension).
-        symbol
-            Dimension for marker symbol. Default: third dimension.
-        facet_col
-            Dimension for subplot columns. Default: fourth dimension.
-        facet_row
-            Dimension for subplot rows. Default: fifth dimension.
-        animation_frame
-            Dimension for animation. Default: sixth dimension.
-        **px_kwargs
-            Additional arguments passed to `plotly.express.scatter()`.
+        Slot order: x -> color -> symbol -> facet_col -> facet_row -> animation_frame
 
-        Returns
-        -------
-        plotly.graph_objects.Figure
+        Args:
+            x: Dimension for x-axis. Default: first dimension.
+            y: What to plot on y-axis. Default "value" uses DataArray values.
+                Can be a dimension name for dimension vs dimension plots.
+            color: Dimension for color grouping, or "value" for DataArray values.
+            symbol: Dimension for marker symbol. Default: third dimension.
+            facet_col: Dimension for subplot columns. Default: fourth dimension.
+            facet_row: Dimension for subplot rows. Default: fifth dimension.
+            animation_frame: Dimension for animation. Default: sixth dimension.
+            **px_kwargs: Additional arguments passed to `plotly.express.scatter()`.
+
+        Returns:
+            Interactive Plotly Figure.
         """
         return plotting.scatter(
             self._da,
@@ -278,31 +214,23 @@ class DataArrayPlotlyAccessor:
         animation_frame: SlotValue = None,
         **px_kwargs: Any,
     ) -> go.Figure:
-        """
-        Create an interactive box plot using Plotly Express.
+        """Create an interactive box plot.
 
-        The y-axis always shows the DataArray values. By default, only the
-        first dimension is assigned to x; all other dimensions are aggregated
-        into the box statistics.
+        By default, only the first dimension is assigned to x; all other
+        dimensions are aggregated into the box statistics.
 
-        Parameters
-        ----------
-        x
-            Dimension for x-axis categories. Default: first dimension.
-        color
-            Dimension for color grouping. Default: None (aggregated).
-        facet_col
-            Dimension for subplot columns. Default: None (aggregated).
-        facet_row
-            Dimension for subplot rows. Default: None (aggregated).
-        animation_frame
-            Dimension for animation. Default: None (aggregated).
-        **px_kwargs
-            Additional arguments passed to `plotly.express.box()`.
+        Slot order: x -> color -> facet_col -> facet_row -> animation_frame
 
-        Returns
-        -------
-        plotly.graph_objects.Figure
+        Args:
+            x: Dimension for x-axis categories. Default: first dimension.
+            color: Dimension for color grouping. Default: None (aggregated).
+            facet_col: Dimension for subplot columns. Default: None (aggregated).
+            facet_row: Dimension for subplot rows. Default: None (aggregated).
+            animation_frame: Dimension for animation. Default: None (aggregated).
+            **px_kwargs: Additional arguments passed to `plotly.express.box()`.
+
+        Returns:
+            Interactive Plotly Figure.
         """
         return plotting.box(
             self._da,
@@ -323,28 +251,19 @@ class DataArrayPlotlyAccessor:
         animation_frame: SlotValue = auto,
         **px_kwargs: Any,
     ) -> go.Figure:
-        """
-        Create an interactive heatmap image using Plotly Express.
+        """Create an interactive heatmap image.
 
-        Dimensions are assigned to plot slots by their order:
-        y (rows) -> x (columns) -> facet_col -> animation_frame
+        Slot order: y (rows) -> x (columns) -> facet_col -> animation_frame
 
-        Parameters
-        ----------
-        x
-            Dimension for x-axis (columns). Default: second dimension.
-        y
-            Dimension for y-axis (rows). Default: first dimension.
-        facet_col
-            Dimension for subplot columns. Default: third dimension.
-        animation_frame
-            Dimension for animation. Default: fourth dimension.
-        **px_kwargs
-            Additional arguments passed to `plotly.express.imshow()`.
+        Args:
+            x: Dimension for x-axis (columns). Default: second dimension.
+            y: Dimension for y-axis (rows). Default: first dimension.
+            facet_col: Dimension for subplot columns. Default: third dimension.
+            animation_frame: Dimension for animation. Default: fourth dimension.
+            **px_kwargs: Additional arguments passed to `plotly.express.imshow()`.
 
-        Returns
-        -------
-        plotly.graph_objects.Figure
+        Returns:
+            Interactive Plotly Figure.
         """
         return plotting.imshow(
             self._da,

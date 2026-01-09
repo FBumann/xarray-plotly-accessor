@@ -1,48 +1,40 @@
-"""
-xarray_plotly: Interactive Plotly Express plotting for xarray.
+"""Interactive Plotly Express plotting for xarray.
 
 This package provides a `plotly` accessor for xarray DataArray objects,
 enabling interactive visualization with Plotly Express.
 
-Features
---------
-- **Interactive plots**: Zoom, pan, hover, toggle traces
-- **Automatic dimension assignment**: Dimensions fill slots (x, color, facet) by position
-- **Multiple plot types**: line, bar, area, scatter, box, imshow
-- **Faceting and animation**: Built-in subplot grids and animated plots
-- **Customizable**: Returns Plotly Figure objects for further modification
+Features:
+    - **Interactive plots**: Zoom, pan, hover, toggle traces
+    - **Automatic dimension assignment**: Dimensions fill slots (x, color, facet) by position
+    - **Multiple plot types**: line, bar, area, scatter, box, imshow
+    - **Faceting and animation**: Built-in subplot grids and animated plots
+    - **Customizable**: Returns Plotly Figure objects for further modification
 
-Usage
------
-Accessor style::
+Usage:
+    Accessor style::
 
-    import xarray_plotly
-    fig = da.plotly.line()
+        import xarray_plotly
+        fig = da.plotly.line()
 
-Function style (recommended for IDE completion)::
+    Function style (recommended for IDE completion)::
 
+        from xarray_plotly import xpx
+        fig = xpx(da).line()
+
+Example:
+    ```python
+    import xarray as xr
+    import numpy as np
     from xarray_plotly import xpx
-    fig = xpx(da).line()
 
-Examples
---------
->>> import xarray as xr
->>> import numpy as np
->>> from xarray_plotly import xpx
-
->>> da = xr.DataArray(
-...     np.random.rand(10, 3, 2),
-...     dims=["time", "city", "scenario"],
-... )
-
->>> # Auto-assignment: time->x, city->color, scenario->facet_col
->>> fig = xpx(da).line()
-
->>> # Explicit assignment
->>> fig = xpx(da).line(x="time", color="scenario", facet_col="city")
-
->>> # Skip a slot with None
->>> fig = xpx(da).line(color=None)
+    da = xr.DataArray(
+        np.random.rand(10, 3, 2),
+        dims=["time", "city", "scenario"],
+    )
+    fig = xpx(da).line()  # Auto: time->x, city->color, scenario->facet_col
+    fig = xpx(da).line(x="time", color="scenario")  # Explicit
+    fig = xpx(da).line(color=None)  # Skip slot
+    ```
 """
 
 from importlib.metadata import version
@@ -63,26 +55,22 @@ __all__ = [
 
 
 def xpx(da: DataArray) -> DataArrayPlotlyAccessor:
-    """
-    Get the plotly accessor for a DataArray with full IDE code completion.
+    """Get the plotly accessor for a DataArray with full IDE code completion.
 
     This is an alternative to `da.plotly` that provides proper type hints
     and code completion in IDEs.
 
-    Parameters
-    ----------
-    da : DataArray
-        The DataArray to plot.
+    Args:
+        da: The DataArray to plot.
 
-    Returns
-    -------
-    DataArrayPlotlyAccessor
-        The accessor with plotting methods.
+    Returns:
+        The accessor with plotting methods (line, bar, area, scatter, box, imshow).
 
-    Examples
-    --------
-    >>> from xarray_plotly import xpx
-    >>> fig = xpx(da).line()  # Full code completion works here
+    Example:
+        ```python
+        from xarray_plotly import xpx
+        fig = xpx(da).line()  # Full code completion works here
+        ```
     """
     return DataArrayPlotlyAccessor(da)
 

@@ -1,9 +1,4 @@
-"""
-Common utilities for Plotly Express plotting.
-
-This module provides the dimension-to-slot assignment algorithm and
-shared utilities for converting xarray data to Plotly-compatible formats.
-"""
+"""Common utilities for dimension-to-slot assignment and data conversion."""
 
 from __future__ import annotations
 
@@ -39,7 +34,8 @@ SLOT_ORDERS = DEFAULT_SLOT_ORDERS
 For most plots, y-axis shows DataArray values (not a dimension slot).
 For imshow, both y and x are dimensions (rows and columns of the heatmap).
 
-Note: To customize slot orders, use `set_options(slot_orders=...)`.
+Note:
+    To customize slot orders, use `config.set_options(slot_orders=...)`.
 """
 
 
@@ -50,8 +46,7 @@ def assign_slots(
     allow_unassigned: bool = False,
     **slot_kwargs: SlotValue,
 ) -> dict[str, Hashable]:
-    """
-    Assign dimensions to plot slots based on position.
+    """Assign dimensions to plot slots based on position.
 
     Positional assignment: dimensions fill slots in order.
     - Explicit assignments lock a dimension to a slot
@@ -59,39 +54,31 @@ def assign_slots(
     - Remaining dims fill remaining slots by position
     - Error if dims left over after all slots filled (unless allow_unassigned=True)
 
-    Parameters
-    ----------
-    dims
-        Dimension names.
-    plot_type
-        Type of plot (line, bar, area, scatter, box, imshow).
-    allow_unassigned
-        If True, allow dimensions to remain unassigned. Default False.
-    **slot_kwargs
-        Explicit slot assignments. Use `auto` for positional assignment,
-        a dimension name for explicit assignment, or `None` to skip the slot.
+    Args:
+        dims: Dimension names from the DataArray.
+        plot_type: Type of plot (line, bar, area, scatter, box, imshow).
+        allow_unassigned: If True, allow dimensions to remain unassigned.
+        **slot_kwargs: Explicit slot assignments. Use `auto` for positional,
+            a dimension name for explicit, or `None` to skip.
 
-    Returns
-    -------
-    dict
+    Returns:
         Mapping of slot names to dimension names.
 
-    Raises
-    ------
-    ValueError
-        If plot_type is unknown, a dimension doesn't exist, or dimensions
-        are left unassigned (unless allow_unassigned=True).
+    Raises:
+        ValueError: If plot_type is unknown, dimension doesn't exist, or
+            dimensions are left unassigned (unless allow_unassigned=True).
 
-    Examples
-    --------
-    >>> assign_slots(["time", "city", "scenario"], "line")
-    {'x': 'time', 'color': 'city', 'line_dash': 'scenario'}
+    Example:
+        ```python
+        assign_slots(["time", "city", "scenario"], "line")
+        # {'x': 'time', 'color': 'city', 'line_dash': 'scenario'}
 
-    >>> assign_slots(["time", "city"], "line", color="time", x="city")
-    {'x': 'city', 'color': 'time'}
+        assign_slots(["time", "city"], "line", color="time", x="city")
+        # {'x': 'city', 'color': 'time'}
 
-    >>> assign_slots(["time", "city", "scenario"], "line", color=None)
-    {'x': 'time', 'line_dash': 'city', 'symbol': 'scenario'}
+        assign_slots(["time", "city", "scenario"], "line", color=None)
+        # {'x': 'time', 'line_dash': 'city', 'symbol': 'scenario'}
+        ```
     """
     slot_orders = _options.slot_orders
     if plot_type not in slot_orders:
@@ -154,7 +141,6 @@ def get_value_col(darray: DataArray) -> str:
 
 def to_dataframe(darray: DataArray) -> pd.DataFrame:
     """Convert a DataArray to a long-form DataFrame for Plotly Express."""
-
     if darray.name is None:
         darray = darray.rename("value")
     df: pd.DataFrame = darray.to_dataframe().reset_index()
@@ -162,19 +148,13 @@ def to_dataframe(darray: DataArray) -> pd.DataFrame:
 
 
 def _get_label_from_attrs(attrs: dict, fallback: str) -> str:
-    """
-    Extract a label from xarray attributes based on current config.
+    """Extract a label from xarray attributes based on current config.
 
-    Parameters
-    ----------
-    attrs
-        Attributes dictionary from DataArray or coordinate.
-    fallback
-        Fallback label if no attributes match.
+    Args:
+        attrs: Attributes dictionary from DataArray or coordinate.
+        fallback: Fallback label if no attributes match.
 
-    Returns
-    -------
-    str
+    Returns:
         The formatted label.
     """
     label = None
@@ -197,11 +177,10 @@ def _get_label_from_attrs(attrs: dict, fallback: str) -> str:
 
 
 def get_label(darray: DataArray, name: Hashable) -> str:
-    """
-    Get a human-readable label for a dimension or the value column.
+    """Get a human-readable label for a dimension or the value column.
 
     Uses long_name/standard_name and units from attributes based on
-    current configuration (see `set_options`).
+    current configuration (see `config.set_options`).
     """
     # Check if it's asking for the value column label
     value_col = get_value_col(darray)
@@ -223,23 +202,15 @@ def build_labels(
     *,
     include_value: bool = True,
 ) -> dict[str, str]:
-    """
-    Build a labels dict for Plotly Express from slot assignments.
+    """Build a labels dict for Plotly Express from slot assignments.
 
-    Parameters
-    ----------
-    darray
-        The source DataArray.
-    slots
-        Slot assignments from assign_slots().
-    value_col
-        The name of the value column in the DataFrame.
-    include_value
-        Whether to include a label for the value column.
+    Args:
+        darray: The source DataArray.
+        slots: Slot assignments from assign_slots().
+        value_col: The name of the value column in the DataFrame.
+        include_value: Whether to include a label for the value column.
 
-    Returns
-    -------
-    dict
+    Returns:
         Mapping of column names to human-readable labels.
     """
     labels: dict[str, str] = {}

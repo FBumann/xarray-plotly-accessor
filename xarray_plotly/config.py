@@ -1,5 +1,4 @@
-"""
-Configuration for xarray_plotly.
+"""Configuration for xarray_plotly.
 
 This module provides a global configuration system similar to xarray and pandas,
 allowing users to customize label extraction and slot assignment behavior.
@@ -50,21 +49,14 @@ DEFAULT_SLOT_ORDERS: dict[str, tuple[str, ...]] = {
 
 @dataclass
 class Options:
-    """
-    Configuration options for xarray_plotly.
+    """Configuration options for xarray_plotly.
 
-    Attributes
-    ----------
-    label_use_long_name : bool
-        Use `long_name` attribute for labels. Default True.
-    label_use_standard_name : bool
-        Fall back to `standard_name` if `long_name` not available. Default True.
-    label_include_units : bool
-        Append units to labels. Default True.
-    label_unit_format : str
-        Format string for units. Use `{units}` as placeholder. Default "[{units}]".
-    slot_orders : dict
-        Slot orders per plot type. Keys are plot types, values are tuples of slot names.
+    Attributes:
+        label_use_long_name: Use `long_name` attribute for labels. Default True.
+        label_use_standard_name: Fall back to `standard_name` if `long_name` not available.
+        label_include_units: Append units to labels. Default True.
+        label_unit_format: Format string for units. Use `{units}` as placeholder.
+        slot_orders: Slot orders per plot type. Keys are plot types, values are tuples.
     """
 
     label_use_long_name: bool = True
@@ -91,19 +83,16 @@ _options = Options()
 
 
 def get_options() -> dict[str, Any]:
-    """
-    Get the current xarray_plotly options.
+    """Get the current xarray_plotly options.
 
-    Returns
-    -------
-    dict
+    Returns:
         Dictionary of current option values.
 
-    Examples
-    --------
-    >>> from xarray_plotly import config
-    >>> config.get_options()
-    {'label_use_long_name': True, 'label_include_units': True, ...}
+    Example:
+        ```python
+        from xarray_plotly import config
+        config.get_options()
+        ```
     """
     return _options.to_dict()
 
@@ -117,39 +106,27 @@ def set_options(
     label_unit_format: str | None = None,
     slot_orders: dict[str, tuple[str, ...]] | None = None,
 ) -> Generator[None, None, None]:
-    """
-    Set xarray_plotly options globally or as a context manager.
+    """Set xarray_plotly options globally or as a context manager.
 
-    Parameters
-    ----------
-    label_use_long_name : bool, optional
-        Use `long_name` attribute for labels.
-    label_use_standard_name : bool, optional
-        Fall back to `standard_name` if `long_name` not available.
-    label_include_units : bool, optional
-        Append units to labels.
-    label_unit_format : str, optional
-        Format string for units. Use `{units}` as placeholder.
-    slot_orders : dict, optional
-        Slot orders per plot type.
+    Args:
+        label_use_long_name: Use `long_name` attribute for labels.
+        label_use_standard_name: Fall back to `standard_name` if `long_name` not available.
+        label_include_units: Append units to labels.
+        label_unit_format: Format string for units. Use `{units}` as placeholder.
+        slot_orders: Slot orders per plot type.
 
-    Yields
-    ------
-    None
-        When used as a context manager, yields nothing.
+    Yields:
+        None when used as a context manager.
 
-    Examples
-    --------
-    Set globally:
+    Example:
+        ```python
+        from xarray_plotly import config, xpx
 
-    >>> from xarray_plotly import config
-    >>> config.set_options(label_include_units=False)
-
-    Use as context manager:
-
-    >>> with config.set_options(label_include_units=False):
-    ...     fig = xpx(da).line()  # No units in labels
-    >>> # Units are back after the context
+        # Use as context manager
+        with config.set_options(label_include_units=False):
+            fig = xpx(da).line()  # No units in labels
+        # Units are back after the context
+        ```
     """
     # Store old values
     old_values = {
@@ -184,19 +161,17 @@ def set_options(
 
 
 def notebook(renderer: str = "notebook") -> None:
-    """
-    Configure Plotly for Jupyter notebook rendering.
+    """Configure Plotly for Jupyter notebook rendering.
 
-    Parameters
-    ----------
-    renderer : str, optional
-        The Plotly renderer to use. Default is "notebook".
-        Other options include "jupyterlab", "colab", "kaggle", etc.
+    Args:
+        renderer: The Plotly renderer to use. Default is "notebook".
+            Other options include "jupyterlab", "colab", "kaggle", etc.
 
-    Examples
-    --------
-    >>> from xarray_plotly import config
-    >>> config.notebook()  # Configure for Jupyter notebooks
+    Example:
+        ```python
+        from xarray_plotly import config
+        config.notebook()  # Configure for Jupyter notebooks
+        ```
     """
     import plotly.io as pio
 
