@@ -63,6 +63,8 @@ fig = da.plotly.line()
 
 The `xpx()` function is recommended as it provides full IDE code completion and type hints.
 
+**Why no IDE completion for the accessor?** xarray accessors are registered dynamically at runtime using `register_dataarray_accessor()`. Python's static type checkers and IDEs cannot see these dynamically added attributes, so `da.plotly` appears as an unknown attribute. This limitation could only be solved by xarray itself (e.g., through a type checker plugin), if at all. The `xpx()` function provides a workaround with an explicit return type that IDEs can follow.
+
 ## Features
 
 - **Interactive plots**: Zoom, pan, hover for values, toggle traces
