@@ -14,9 +14,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Typing :: Stubs Only",
 ]
-dependencies = [
-    "xarray_plotly",
-]
+dependencies = []
 
 [project.urls]
 Homepage = "https://github.com/felix/xarray_plotly"

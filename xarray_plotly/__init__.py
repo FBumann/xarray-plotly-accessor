@@ -25,14 +25,19 @@ Examples
 >>> fig = da.plotly.line(color=None)  # time->x, city->facet_col, scenario->facet_row
 """
 
-from xarray import register_dataarray_accessor
+from typing import TYPE_CHECKING
 
+from xarray import DataArray, register_dataarray_accessor
+
+from xarray_plotly._typing import DataArrayWithPlotly
 from xarray_plotly.accessor import DataArrayPlotlyAccessor
 from xarray_plotly.common import SLOT_ORDERS, auto
 
 __all__ = [
     "SLOT_ORDERS",
+    "DataArray",
     "DataArrayPlotlyAccessor",
+    "DataArrayWithPlotly",
     "auto",
 ]
 
@@ -41,4 +46,16 @@ from importlib.metadata import version
 __version__ = version("xarray_plotly")
 
 # Register the accessor
-register_dataarray_accessor("plotly")(DataArrayPlotlyAccessor)
+register_dataarray_accessor("plotly")(DataArrayPlotlyAccessor)  # type: ignore[no-untyped-call]
+
+# IDE code completion support
+# This block is only evaluated by type checkers and IDEs, not at runtime
+if TYPE_CHECKING:
+    from xarray import DataArray as _DataArray
+
+    class _DataArrayPlotlyExtension:
+        @property
+        def plotly(self) -> DataArrayPlotlyAccessor: ...
+
+    class DataArray(_DataArray, _DataArrayPlotlyExtension):  # type: ignore[no-redef,no-untyped-call]
+        ...

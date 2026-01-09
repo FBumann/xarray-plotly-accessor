@@ -2,26 +2,25 @@
 
 Type stubs for [xarray_plotly](https://github.com/felix/xarray_plotly).
 
-## Installation
+## Recommended Approach: Protocol
+
+For most use cases, use the `DataArrayWithPlotly` protocol instead of this stubs package:
+
+```python
+from xarray_plotly import DataArrayWithPlotly
+
+def plot_data(da: DataArrayWithPlotly) -> None:
+    fig = da.plotly.line()  # Properly typed!
+```
+
+This works without any additional packages and provides proper type checking.
+
+## Stubs Package (Advanced)
+
+If you want direct `da.plotly` typing without using the protocol, install this stubs package:
 
 ```bash
 pip install xarray_plotly_stubs
 ```
 
-This package provides type hints for the `da.plotly` accessor added by xarray_plotly.
-
-## Usage
-
-After installing, type checkers will recognize the `plotly` accessor on xarray DataArrays:
-
-```python
-import xarray as xr
-import xarray_plotly  # registers the accessor
-
-da = xr.DataArray(...)
-fig = da.plotly.line()  # Now properly typed!
-```
-
-## Note
-
-Install this package alongside `xarray_plotly` for full type checking support.
+**Warning**: These stubs may shadow xarray's built-in types in some type checkers. Use with caution.
