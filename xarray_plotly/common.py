@@ -81,6 +81,17 @@ def assign_slots(
     ValueError
         If plot_type is unknown, a dimension doesn't exist, or dimensions
         are left unassigned (unless allow_unassigned=True).
+
+    Examples
+    --------
+    >>> assign_slots(["time", "city", "scenario"], "line")
+    {'x': 'time', 'color': 'city', 'line_dash': 'scenario'}
+
+    >>> assign_slots(["time", "city"], "line", color="time", x="city")
+    {'x': 'city', 'color': 'time'}
+
+    >>> assign_slots(["time", "city", "scenario"], "line", color=None)
+    {'x': 'time', 'line_dash': 'city', 'symbol': 'scenario'}
     """
     slot_orders = _options.slot_orders
     if plot_type not in slot_orders:

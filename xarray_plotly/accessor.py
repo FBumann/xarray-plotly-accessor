@@ -13,20 +13,40 @@ from xarray_plotly.common import SlotValue, auto
 
 class DataArrayPlotlyAccessor:
     """
-    Enables use of Plotly Express plotting functions on a DataArray.
+    Plotly Express plotting accessor for xarray DataArray.
 
-    Methods return Plotly Figure objects for interactive visualization.
+    Dimensions are automatically assigned to plot slots by position.
+    All methods return Plotly Figure objects for interactive visualization.
+
+    Available methods: line, bar, area, scatter, box, imshow
+
+    Parameters
+    ----------
+    darray : DataArray
+        The DataArray to plot.
 
     Examples
     --------
     >>> import xarray as xr
     >>> import numpy as np
     >>> da = xr.DataArray(np.random.rand(10, 3), dims=["time", "city"])
-    >>> fig = da.plotly.line()  # Auto-assign dims: time->x, city->color
-    >>> fig.show()
 
-    >>> fig = da.plotly.line(x="time", color=None)  # Explicit assignment
-    >>> fig.update_layout(title="My Plot")
+    Auto-assign dimensions to slots:
+
+    >>> fig = da.plotly.line()  # time->x, city->color
+
+    Explicit slot assignment:
+
+    >>> fig = da.plotly.line(color="time", x="city")
+
+    Skip a slot with None:
+
+    >>> fig = da.plotly.line(color=None)  # time->x, city->line_dash
+
+    Customize the returned Figure:
+
+    >>> fig = da.plotly.line()
+    >>> fig.update_layout(title="My Plot", template="plotly_dark")
     """
 
     __all__: ClassVar = ["line", "bar", "area", "scatter", "box", "imshow"]

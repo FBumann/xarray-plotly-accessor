@@ -1,8 +1,28 @@
 """
 xarray_plotly: Interactive Plotly Express plotting for xarray.
 
-This package provides interactive plotting for xarray DataArray objects
-using Plotly Express.
+This package provides a `plotly` accessor for xarray DataArray objects,
+enabling interactive visualization with Plotly Express.
+
+Features
+--------
+- **Interactive plots**: Zoom, pan, hover, toggle traces
+- **Automatic dimension assignment**: Dimensions fill slots (x, color, facet) by position
+- **Multiple plot types**: line, bar, area, scatter, box, imshow
+- **Faceting and animation**: Built-in subplot grids and animated plots
+- **Customizable**: Returns Plotly Figure objects for further modification
+
+Usage
+-----
+Accessor style::
+
+    import xarray_plotly
+    fig = da.plotly.line()
+
+Function style (recommended for IDE completion)::
+
+    from xarray_plotly import xpx
+    fig = xpx(da).line()
 
 Examples
 --------
@@ -21,8 +41,8 @@ Examples
 >>> # Explicit assignment
 >>> fig = xpx(da).line(x="time", color="scenario", facet_col="city")
 
->>> # Skip a slot
->>> fig = xpx(da).line(color=None)  # time->x, city->facet_col, scenario->facet_row
+>>> # Skip a slot with None
+>>> fig = xpx(da).line(color=None)
 """
 
 from importlib.metadata import version
