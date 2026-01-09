@@ -45,6 +45,9 @@ docs = [
     "mkdocstrings[python]>=0.24",
     "mkdocs-jupyter>=0.24",
     "mkdocs-plotly-plugin>=0.1",
+    "pooch>=1.0",
+    "netcdf4>=1.6",
+    "jupyter>=1.0",
 ]
 
 [project.entry-points."xarray.backends"]
