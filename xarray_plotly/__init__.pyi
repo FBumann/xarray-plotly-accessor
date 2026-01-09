@@ -10,6 +10,6 @@ from xarray_plotly.common import auto as auto
 __version__: str
 
 # Augment xarray.DataArray with plotly accessor for IDE autocompletion
-class DataArray(_DataArray):
+class DataArray(_DataArray):  # type: ignore[no-untyped-call]
     @property
     def plotly(self) -> DataArrayPlotlyAccessor: ...
