@@ -9,6 +9,32 @@ import pytest
 import xarray as xr
 
 import xarray_plotly  # noqa: F401 - registers accessor
+from xarray_plotly import xpx
+
+
+class TestXpxFunction:
+    """Tests for the xpx() function."""
+
+    def test_xpx_returns_accessor(self) -> None:
+        """Test that xpx() returns a DataArrayPlotlyAccessor."""
+        da = xr.DataArray(np.random.rand(10), dims=["time"])
+        accessor = xpx(da)
+        assert hasattr(accessor, "line")
+        assert hasattr(accessor, "bar")
+        assert hasattr(accessor, "scatter")
+
+    def test_xpx_equivalent_to_accessor(self) -> None:
+        """Test that xpx(da).line() works the same as da.plotly.line()."""
+        da = xr.DataArray(
+            np.random.rand(10, 3),
+            dims=["time", "city"],
+            coords={"time": np.arange(10), "city": ["A", "B", "C"]},
+            name="test",
+        )
+        fig1 = xpx(da).line()
+        fig2 = da.plotly.line()
+        assert isinstance(fig1, go.Figure)
+        assert isinstance(fig2, go.Figure)
 
 
 class TestDataArrayPxplot:
