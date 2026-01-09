@@ -705,6 +705,7 @@
 <a href="#__codelineno-1-7" id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">plotly</span><span class="o">.</span><span class="n">line</span><span class="p">()</span>
 </code></pre></div>
 <p>The <code>xpx()</code> function is recommended as it provides full IDE code completion and type hints.</p>
+<p><strong>Why no IDE completion for the accessor?</strong> xarray accessors are registered dynamically at runtime using <code>register_dataarray_accessor()</code>. Python's static type checkers and IDEs cannot see these dynamically added attributes, so <code>da.plotly</code> appears as an unknown attribute. This limitation could only be solved by xarray itself (e.g., through a type checker plugin), if at all. The <code>xpx()</code> function provides a workaround with an explicit return type that IDEs can follow.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">¶</a></h2>
 <div class="highlight"><pre><span></span><code><a href="#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a>pip<span class="w"> </span>install<span class="w"> </span>xarray_plotly
 </code></pre></div>
