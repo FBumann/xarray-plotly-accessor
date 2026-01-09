@@ -1,9 +1,9 @@
-"""Accessor classes for Plotly Express plotting on DataArray."""
+"""Accessor classes for Plotly Express plotting on DataArray and Dataset."""
 
 from typing import Any, ClassVar
 
 import plotly.graph_objects as go
-from xarray import DataArray
+from xarray import DataArray, Dataset
 
 from xarray_plotly import plotting
 from xarray_plotly.common import SlotValue, auto
@@ -270,6 +270,252 @@ class DataArrayPlotlyAccessor:
             x=x,
             y=y,
             facet_col=facet_col,
+            animation_frame=animation_frame,
+            **px_kwargs,
+        )
+
+
+class DatasetPlotlyAccessor:
+    """Plotly Express plotting accessor for xarray Dataset.
+
+    Plot a single variable or all variables at once. When plotting all variables,
+    a "variable" dimension is created that can be assigned to any slot.
+
+    Available methods: line, bar, area, scatter, box
+
+    Args:
+        dataset: The Dataset to plot.
+
+    Example:
+        ```python
+        import xarray as xr
+        import numpy as np
+
+        ds = xr.Dataset({
+            "temperature": (["time", "city"], np.random.rand(10, 3)),
+            "humidity": (["time", "city"], np.random.rand(10, 3)),
+        })
+
+        # Plot all variables - "variable" dimension auto-assigned to color
+        fig = ds.plotly.line()
+
+        # Control where "variable" goes
+        fig = ds.plotly.line(facet_col="variable")
+
+        # Plot single variable
+        fig = ds.plotly.line(var="temperature")
+        ```
+    """
+
+    __all__: ClassVar = ["line", "bar", "area", "scatter", "box"]
+
+    def __init__(self, dataset: Dataset) -> None:
+        self._ds = dataset
+
+    def __dir__(self) -> list[str]:
+        """List available plot methods."""
+        return list(self.__all__) + list(super().__dir__())
+
+    def _get_dataarray(self, var: str | None) -> DataArray:
+        """Get DataArray from Dataset, either single var or all via to_array()."""
+        if var is None:
+            return self._ds.to_array(dim="variable")
+        return self._ds[var]
+
+    def line(
+        self,
+        var: str | None = None,
+        *,
+        x: SlotValue = auto,
+        color: SlotValue = auto,
+        line_dash: SlotValue = auto,
+        symbol: SlotValue = auto,
+        facet_col: SlotValue = auto,
+        facet_row: SlotValue = auto,
+        animation_frame: SlotValue = auto,
+        **px_kwargs: Any,
+    ) -> go.Figure:
+        """Create an interactive line plot.
+
+        Args:
+            var: Variable to plot. If None, plots all variables with "variable" dimension.
+            x: Dimension for x-axis.
+            color: Dimension for color grouping.
+            line_dash: Dimension for line dash style.
+            symbol: Dimension for marker symbol.
+            facet_col: Dimension for subplot columns.
+            facet_row: Dimension for subplot rows.
+            animation_frame: Dimension for animation.
+            **px_kwargs: Additional arguments passed to `plotly.express.line()`.
+
+        Returns:
+            Interactive Plotly Figure.
+        """
+        da = self._get_dataarray(var)
+        return plotting.line(
+            da,
+            x=x,
+            color=color,
+            line_dash=line_dash,
+            symbol=symbol,
+            facet_col=facet_col,
+            facet_row=facet_row,
+            animation_frame=animation_frame,
+            **px_kwargs,
+        )
+
+    def bar(
+        self,
+        var: str | None = None,
+        *,
+        x: SlotValue = auto,
+        color: SlotValue = auto,
+        pattern_shape: SlotValue = auto,
+        facet_col: SlotValue = auto,
+        facet_row: SlotValue = auto,
+        animation_frame: SlotValue = auto,
+        **px_kwargs: Any,
+    ) -> go.Figure:
+        """Create an interactive bar chart.
+
+        Args:
+            var: Variable to plot. If None, plots all variables with "variable" dimension.
+            x: Dimension for x-axis.
+            color: Dimension for color grouping.
+            pattern_shape: Dimension for bar fill pattern.
+            facet_col: Dimension for subplot columns.
+            facet_row: Dimension for subplot rows.
+            animation_frame: Dimension for animation.
+            **px_kwargs: Additional arguments passed to `plotly.express.bar()`.
+
+        Returns:
+            Interactive Plotly Figure.
+        """
+        da = self._get_dataarray(var)
+        return plotting.bar(
+            da,
+            x=x,
+            color=color,
+            pattern_shape=pattern_shape,
+            facet_col=facet_col,
+            facet_row=facet_row,
+            animation_frame=animation_frame,
+            **px_kwargs,
+        )
+
+    def area(
+        self,
+        var: str | None = None,
+        *,
+        x: SlotValue = auto,
+        color: SlotValue = auto,
+        pattern_shape: SlotValue = auto,
+        facet_col: SlotValue = auto,
+        facet_row: SlotValue = auto,
+        animation_frame: SlotValue = auto,
+        **px_kwargs: Any,
+    ) -> go.Figure:
+        """Create an interactive stacked area chart.
+
+        Args:
+            var: Variable to plot. If None, plots all variables with "variable" dimension.
+            x: Dimension for x-axis.
+            color: Dimension for color/stacking.
+            pattern_shape: Dimension for fill pattern.
+            facet_col: Dimension for subplot columns.
+            facet_row: Dimension for subplot rows.
+            animation_frame: Dimension for animation.
+            **px_kwargs: Additional arguments passed to `plotly.express.area()`.
+
+        Returns:
+            Interactive Plotly Figure.
+        """
+        da = self._get_dataarray(var)
+        return plotting.area(
+            da,
+            x=x,
+            color=color,
+            pattern_shape=pattern_shape,
+            facet_col=facet_col,
+            facet_row=facet_row,
+            animation_frame=animation_frame,
+            **px_kwargs,
+        )
+
+    def scatter(
+        self,
+        var: str | None = None,
+        *,
+        x: SlotValue = auto,
+        y: SlotValue | str = "value",
+        color: SlotValue = auto,
+        symbol: SlotValue = auto,
+        facet_col: SlotValue = auto,
+        facet_row: SlotValue = auto,
+        animation_frame: SlotValue = auto,
+        **px_kwargs: Any,
+    ) -> go.Figure:
+        """Create an interactive scatter plot.
+
+        Args:
+            var: Variable to plot. If None, plots all variables with "variable" dimension.
+            x: Dimension for x-axis.
+            y: What to plot on y-axis. Default "value" uses DataArray values.
+            color: Dimension for color grouping, or "value" for DataArray values.
+            symbol: Dimension for marker symbol.
+            facet_col: Dimension for subplot columns.
+            facet_row: Dimension for subplot rows.
+            animation_frame: Dimension for animation.
+            **px_kwargs: Additional arguments passed to `plotly.express.scatter()`.
+
+        Returns:
+            Interactive Plotly Figure.
+        """
+        da = self._get_dataarray(var)
+        return plotting.scatter(
+            da,
+            x=x,
+            y=y,
+            color=color,
+            symbol=symbol,
+            facet_col=facet_col,
+            facet_row=facet_row,
+            animation_frame=animation_frame,
+            **px_kwargs,
+        )
+
+    def box(
+        self,
+        var: str | None = None,
+        *,
+        x: SlotValue = auto,
+        color: SlotValue = None,
+        facet_col: SlotValue = None,
+        facet_row: SlotValue = None,
+        animation_frame: SlotValue = None,
+        **px_kwargs: Any,
+    ) -> go.Figure:
+        """Create an interactive box plot.
+
+        Args:
+            var: Variable to plot. If None, plots all variables with "variable" dimension.
+            x: Dimension for x-axis categories.
+            color: Dimension for color grouping.
+            facet_col: Dimension for subplot columns.
+            facet_row: Dimension for subplot rows.
+            animation_frame: Dimension for animation.
+            **px_kwargs: Additional arguments passed to `plotly.express.box()`.
+
+        Returns:
+            Interactive Plotly Figure.
+        """
+        da = self._get_dataarray(var)
+        return plotting.box(
+            da,
+            x=x,
+            color=color,
+            facet_col=facet_col,
+            facet_row=facet_row,
             animation_frame=animation_frame,
             **px_kwargs,
         )

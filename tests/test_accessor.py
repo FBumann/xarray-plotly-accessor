@@ -15,15 +15,26 @@ from xarray_plotly import xpx
 class TestXpxFunction:
     """Tests for the xpx() function."""
 
-    def test_xpx_returns_accessor(self) -> None:
-        """Test that xpx() returns a DataArrayPlotlyAccessor."""
+    def test_xpx_returns_dataarray_accessor(self) -> None:
+        """Test that xpx() returns a DataArrayPlotlyAccessor for DataArray."""
         da = xr.DataArray(np.random.rand(10), dims=["time"])
         accessor = xpx(da)
         assert hasattr(accessor, "line")
         assert hasattr(accessor, "bar")
         assert hasattr(accessor, "scatter")
+        assert hasattr(accessor, "imshow")
 
-    def test_xpx_equivalent_to_accessor(self) -> None:
+    def test_xpx_returns_dataset_accessor(self) -> None:
+        """Test that xpx() returns a DatasetPlotlyAccessor for Dataset."""
+        ds = xr.Dataset({"temp": (["time"], np.random.rand(10))})
+        accessor = xpx(ds)
+        assert hasattr(accessor, "line")
+        assert hasattr(accessor, "bar")
+        assert hasattr(accessor, "scatter")
+        # Dataset accessor should not have imshow
+        assert not hasattr(accessor, "imshow")
+
+    def test_xpx_dataarray_equivalent_to_accessor(self) -> None:
         """Test that xpx(da).line() works the same as da.plotly.line()."""
         da = xr.DataArray(
             np.random.rand(10, 3),
@@ -33,6 +44,19 @@ class TestXpxFunction:
         )
         fig1 = xpx(da).line()
         fig2 = da.plotly.line()
+        assert isinstance(fig1, go.Figure)
+        assert isinstance(fig2, go.Figure)
+
+    def test_xpx_dataset_equivalent_to_accessor(self) -> None:
+        """Test that xpx(ds).line() works the same as ds.plotly.line()."""
+        ds = xr.Dataset(
+            {
+                "temperature": (["time", "city"], np.random.rand(10, 3)),
+                "humidity": (["time", "city"], np.random.rand(10, 3)),
+            }
+        )
+        fig1 = xpx(ds).line()
+        fig2 = ds.plotly.line()
         assert isinstance(fig1, go.Figure)
         assert isinstance(fig2, go.Figure)
 
@@ -205,4 +229,66 @@ class TestLabelsAndMetadata:
     def test_value_label_from_attrs(self) -> None:
         """Test that value labels are extracted from attributes."""
         fig = self.da.plotly.line()
+        assert isinstance(fig, go.Figure)
+
+
+class TestDatasetPlotlyAccessor:
+    """Tests for Dataset.plotly accessor."""
+
+    @pytest.fixture(autouse=True)
+    def setup(self) -> None:
+        """Set up test data."""
+        self.ds = xr.Dataset(
+            {
+                "temperature": (["time", "city"], np.random.rand(10, 3)),
+                "humidity": (["time", "city"], np.random.rand(10, 3)),
+            },
+            coords={
+                "time": pd.date_range("2020", periods=10),
+                "city": ["NYC", "LA", "Chicago"],
+            },
+        )
+
+    def test_accessor_exists(self) -> None:
+        """Test that plotly accessor is available on Dataset."""
+        assert hasattr(self.ds, "plotly")
+        assert hasattr(self.ds.plotly, "line")
+        assert hasattr(self.ds.plotly, "bar")
+        assert hasattr(self.ds.plotly, "area")
+        assert hasattr(self.ds.plotly, "scatter")
+        assert hasattr(self.ds.plotly, "box")
+
+    def test_line_all_variables(self) -> None:
+        """Test line plot with all variables."""
+        fig = self.ds.plotly.line()
+        assert isinstance(fig, go.Figure)
+
+    def test_line_single_variable(self) -> None:
+        """Test line plot with single variable."""
+        fig = self.ds.plotly.line(var="temperature")
+        assert isinstance(fig, go.Figure)
+
+    def test_line_variable_as_facet(self) -> None:
+        """Test line plot with variable as facet."""
+        fig = self.ds.plotly.line(facet_col="variable")
+        assert isinstance(fig, go.Figure)
+
+    def test_bar_all_variables(self) -> None:
+        """Test bar plot with all variables."""
+        fig = self.ds.plotly.bar()
+        assert isinstance(fig, go.Figure)
+
+    def test_area_all_variables(self) -> None:
+        """Test area plot with all variables."""
+        fig = self.ds.plotly.area()
+        assert isinstance(fig, go.Figure)
+
+    def test_scatter_all_variables(self) -> None:
+        """Test scatter plot with all variables."""
+        fig = self.ds.plotly.scatter()
+        assert isinstance(fig, go.Figure)
+
+    def test_box_all_variables(self) -> None:
+        """Test box plot with all variables."""
+        fig = self.ds.plotly.box()
         assert isinstance(fig, go.Figure)
