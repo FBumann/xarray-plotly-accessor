@@ -53,13 +53,17 @@ from xarray import DataArray, Dataset, register_dataarray_accessor, register_dat
 from xarray_plotly import config
 from xarray_plotly.accessor import DataArrayPlotlyAccessor, DatasetPlotlyAccessor
 from xarray_plotly.common import SLOT_ORDERS, auto
+from xarray_plotly.figures import add_secondary_y, combine_figures, overlay_figures
 
 __all__ = [
     "SLOT_ORDERS",
     "DataArrayPlotlyAccessor",
     "DatasetPlotlyAccessor",
+    "add_secondary_y",
     "auto",
+    "combine_figures",
     "config",
+    "overlay_figures",
     "xpx",
 ]
 
