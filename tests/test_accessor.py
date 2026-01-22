@@ -146,26 +146,26 @@ class TestDataArrayPxplot:
         fig = self.da_2d.plotly.area()
         assert isinstance(fig, go.Figure)
 
-    def test_area_barlike_returns_figure(self) -> None:
-        """Test that area(barlike=True) returns a Plotly Figure."""
-        fig = self.da_2d.plotly.area(barlike=True)
+    def test_fast_bar_returns_figure(self) -> None:
+        """Test that fast_bar() returns a Plotly Figure."""
+        fig = self.da_2d.plotly.fast_bar()
         assert isinstance(fig, go.Figure)
 
-    def test_area_barlike_trace_styling(self) -> None:
-        """Test that barlike applies correct trace styling."""
-        fig = self.da_2d.plotly.area(barlike=True)
+    def test_fast_bar_trace_styling(self) -> None:
+        """Test that fast_bar applies correct trace styling."""
+        fig = self.da_2d.plotly.fast_bar()
         for trace in fig.data:
             assert trace.line.width == 0
             assert trace.line.shape == "hv"
             assert trace.fillcolor is not None
 
-    def test_area_barlike_animation_frames(self) -> None:
-        """Test that barlike styling applies to animation frames."""
+    def test_fast_bar_animation_frames(self) -> None:
+        """Test that fast_bar styling applies to animation frames."""
         da = xr.DataArray(
             np.random.rand(5, 3, 4),
             dims=["time", "city", "year"],
         )
-        fig = da.plotly.area(animation_frame="year", barlike=True)
+        fig = da.plotly.fast_bar(animation_frame="year")
         assert len(fig.frames) > 0
         for frame in fig.frames:
             for trace in frame.data:

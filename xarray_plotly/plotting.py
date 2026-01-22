@@ -175,6 +175,81 @@ def _apply_barlike_style(traces: tuple) -> None:
         trace.line = {"width": 0, "color": color, "shape": "hv"}
 
 
+def fast_bar(
+    darray: DataArray,
+    *,
+    x: SlotValue = auto,
+    color: SlotValue = auto,
+    facet_col: SlotValue = auto,
+    facet_row: SlotValue = auto,
+    animation_frame: SlotValue = auto,
+    **px_kwargs: Any,
+) -> go.Figure:
+    """
+    Create a bar-like chart using stacked areas for better performance.
+
+    Uses `px.area` with stepped lines and no outline to create a bar-like
+    appearance. Renders faster than `bar()` for large datasets because it
+    uses a single polygon per trace instead of individual rectangles.
+
+    The y-axis shows DataArray values. Dimensions fill slots in order:
+    x -> color -> facet_col -> facet_row -> animation_frame
+
+    Parameters
+    ----------
+    darray
+        The DataArray to plot.
+    x
+        Dimension for x-axis. Default: first dimension.
+    color
+        Dimension for color/stacking. Default: second dimension.
+    facet_col
+        Dimension for subplot columns. Default: third dimension.
+    facet_row
+        Dimension for subplot rows. Default: fourth dimension.
+    animation_frame
+        Dimension for animation. Default: fifth dimension.
+    **px_kwargs
+        Additional arguments passed to `plotly.express.area()`.
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+    """
+    slots = assign_slots(
+        list(darray.dims),
+        "fast_bar",
+        x=x,
+        color=color,
+        facet_col=facet_col,
+        facet_row=facet_row,
+        animation_frame=animation_frame,
+    )
+
+    df = to_dataframe(darray)
+    value_col = get_value_col(darray)
+    labels = {**build_labels(darray, slots, value_col), **px_kwargs.pop("labels", {})}
+
+    fig = px.area(
+        df,
+        x=slots.get("x"),
+        y=value_col,
+        color=slots.get("color"),
+        facet_col=slots.get("facet_col"),
+        facet_row=slots.get("facet_row"),
+        animation_frame=slots.get("animation_frame"),
+        line_shape="hv",
+        labels=labels,
+        **px_kwargs,
+    )
+
+    _apply_barlike_style(fig.data)
+    for frame in fig.frames:
+        _apply_barlike_style(frame.data)
+
+    return fig
+
+
 def area(
     darray: DataArray,
     *,
@@ -184,7 +259,6 @@ def area(
     facet_col: SlotValue = auto,
     facet_row: SlotValue = auto,
     animation_frame: SlotValue = auto,
-    barlike: bool = False,
     **px_kwargs: Any,
 ) -> go.Figure:
     """
@@ -209,10 +283,6 @@ def area(
         Dimension for subplot rows. Default: fifth dimension.
     animation_frame
         Dimension for animation. Default: sixth dimension.
-    barlike
-        If True, style the area chart to look like a bar chart using stepped
-        lines with no outline. Renders faster than bar charts for large data.
-        Default: False.
     **px_kwargs
         Additional arguments passed to `plotly.express.area()`.
 
@@ -231,14 +301,11 @@ def area(
         animation_frame=animation_frame,
     )
 
-    if barlike:
-        px_kwargs.setdefault("line_shape", "hv")
-
     df = to_dataframe(darray)
     value_col = get_value_col(darray)
     labels = {**build_labels(darray, slots, value_col), **px_kwargs.pop("labels", {})}
 
-    fig = px.area(
+    return px.area(
         df,
         x=slots.get("x"),
         y=value_col,
@@ -250,13 +317,6 @@ def area(
         labels=labels,
         **px_kwargs,
     )
-
-    if barlike:
-        _apply_barlike_style(fig.data)
-        for frame in fig.frames:
-            _apply_barlike_style(frame.data)
-
-    return fig
 
 
 def box(

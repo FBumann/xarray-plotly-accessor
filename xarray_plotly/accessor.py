@@ -131,7 +131,6 @@ class DataArrayPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
-        barlike: bool = False,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive stacked area chart.
@@ -145,7 +144,6 @@ class DataArrayPlotlyAccessor:
             facet_col: Dimension for subplot columns. Default: fourth dimension.
             facet_row: Dimension for subplot rows. Default: fifth dimension.
             animation_frame: Dimension for animation. Default: sixth dimension.
-            barlike: If True, style as bar chart (stepped, no outline). Faster than bars.
             **px_kwargs: Additional arguments passed to `plotly.express.area()`.
 
         Returns:
@@ -159,7 +157,41 @@ class DataArrayPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
-            barlike=barlike,
+            **px_kwargs,
+        )
+
+    def fast_bar(
+        self,
+        *,
+        x: SlotValue = auto,
+        color: SlotValue = auto,
+        facet_col: SlotValue = auto,
+        facet_row: SlotValue = auto,
+        animation_frame: SlotValue = auto,
+        **px_kwargs: Any,
+    ) -> go.Figure:
+        """Create a bar-like chart using stacked areas for better performance.
+
+        Slot order: x -> color -> facet_col -> facet_row -> animation_frame
+
+        Args:
+            x: Dimension for x-axis. Default: first dimension.
+            color: Dimension for color/stacking. Default: second dimension.
+            facet_col: Dimension for subplot columns. Default: third dimension.
+            facet_row: Dimension for subplot rows. Default: fourth dimension.
+            animation_frame: Dimension for animation. Default: fifth dimension.
+            **px_kwargs: Additional arguments passed to `plotly.express.area()`.
+
+        Returns:
+            Interactive Plotly Figure.
+        """
+        return plotting.fast_bar(
+            self._da,
+            x=x,
+            color=color,
+            facet_col=facet_col,
+            facet_row=facet_row,
+            animation_frame=animation_frame,
             **px_kwargs,
         )
 
@@ -475,7 +507,6 @@ class DatasetPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
-        barlike: bool = False,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive stacked area chart.
@@ -488,7 +519,6 @@ class DatasetPlotlyAccessor:
             facet_col: Dimension for subplot columns.
             facet_row: Dimension for subplot rows.
             animation_frame: Dimension for animation.
-            barlike: If True, style as bar chart (stepped, no outline). Faster than bars.
             **px_kwargs: Additional arguments passed to `plotly.express.area()`.
 
         Returns:
@@ -503,7 +533,42 @@ class DatasetPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
-            barlike=barlike,
+            **px_kwargs,
+        )
+
+    def fast_bar(
+        self,
+        var: str | None = None,
+        *,
+        x: SlotValue = auto,
+        color: SlotValue = auto,
+        facet_col: SlotValue = auto,
+        facet_row: SlotValue = auto,
+        animation_frame: SlotValue = auto,
+        **px_kwargs: Any,
+    ) -> go.Figure:
+        """Create a bar-like chart using stacked areas for better performance.
+
+        Args:
+            var: Variable to plot. If None, plots all variables with "variable" dimension.
+            x: Dimension for x-axis.
+            color: Dimension for color/stacking.
+            facet_col: Dimension for subplot columns.
+            facet_row: Dimension for subplot rows.
+            animation_frame: Dimension for animation.
+            **px_kwargs: Additional arguments passed to `plotly.express.area()`.
+
+        Returns:
+            Interactive Plotly Figure.
+        """
+        da = self._get_dataarray(var)
+        return plotting.fast_bar(
+            da,
+            x=x,
+            color=color,
+            facet_col=facet_col,
+            facet_row=facet_row,
+            animation_frame=animation_frame,
             **px_kwargs,
         )
 
