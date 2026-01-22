@@ -232,6 +232,20 @@ class TestOverlayAnimation:
         combined_names = {frame.name for frame in combined.frames}
         assert original_names == combined_names
 
+    def test_frame_layout_preserved(self) -> None:
+        """Test that frame layout (e.g., axis range) is preserved."""
+        fig = xpx(self.da_3d).line(animation_frame="time", range_y=[0, 10])
+        overlay_fig = xpx(self.da_3d).scatter(animation_frame="time")
+
+        # Verify base has frame layout
+        assert fig.frames[0].layout is not None
+
+        combined = overlay(fig, overlay_fig)
+
+        # Frame layout should be preserved
+        for i, frame in enumerate(combined.frames):
+            assert frame.layout == fig.frames[i].layout
+
 
 class TestOverlayFacetsAndAnimation:
     """Tests for overlay with both facets and animation."""
@@ -559,6 +573,20 @@ class TestAddSecondaryYAnimation:
 
         with pytest.raises(ValueError, match="frame names don't match"):
             add_secondary_y(fig1, fig2)
+
+    def test_frame_layout_preserved(self) -> None:
+        """Test that frame layout (e.g., axis range) is preserved."""
+        base = xpx(self.da_2d).line(animation_frame="time", range_y=[0, 10])
+        secondary = xpx(self.da_2d).bar(animation_frame="time")
+
+        # Verify base has frame layout
+        assert base.frames[0].layout is not None
+
+        combined = add_secondary_y(base, secondary)
+
+        # Frame layout should be preserved
+        for i, frame in enumerate(combined.frames):
+            assert frame.layout == base.frames[i].layout
 
 
 class TestAddSecondaryYDeepCopy:
