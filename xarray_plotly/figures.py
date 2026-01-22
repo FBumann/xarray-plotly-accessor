@@ -200,6 +200,34 @@ def overlay_figures(base: go.Figure, *overlays: go.Figure) -> go.Figure:
 combine_figures = overlay_figures
 
 
+def _build_secondary_y_mapping(base_axes: set[tuple[str, str]]) -> dict[str, str]:
+    """Build mapping from primary y-axes to secondary y-axes.
+
+    Args:
+        base_axes: Set of (xaxis, yaxis) pairs from base figure.
+
+    Returns:
+        Dict mapping primary yaxis names to secondary yaxis names.
+        E.g., {'y': 'y4', 'y2': 'y5', 'y3': 'y6'}
+    """
+    primary_y_axes = sorted({yaxis for _, yaxis in base_axes})
+
+    # Find the highest existing yaxis number
+    max_y_num = 1  # 'y' is 1
+    for yaxis in primary_y_axes:
+        num = 1 if yaxis == "y" else int(yaxis[1:])
+        max_y_num = max(max_y_num, num)
+
+    # Create mapping: primary_yaxis -> secondary_yaxis
+    y_mapping = {}
+    next_y_num = max_y_num + 1
+    for yaxis in primary_y_axes:
+        y_mapping[yaxis] = f"y{next_y_num}"
+        next_y_num += 1
+
+    return y_mapping
+
+
 def add_secondary_y(
     base: go.Figure,
     secondary: go.Figure,
@@ -208,9 +236,10 @@ def add_secondary_y(
 ) -> go.Figure:
     """Add a secondary y-axis with traces from another figure.
 
-    Creates a new figure with the base figure's layout and a secondary y-axis
+    Creates a new figure with the base figure's layout and secondary y-axes
     on the right side. All traces from the secondary figure are plotted against
-    the secondary y-axis.
+    the secondary y-axes. Supports faceted figures when both have matching
+    facet structure.
 
     Args:
         base: The base figure (left y-axis).
@@ -222,7 +251,7 @@ def add_secondary_y(
         A new figure with both primary and secondary y-axes.
 
     Raises:
-        ValueError: If either figure has facets (subplots), or if animation
+        ValueError: If facet structures don't match, or if animation
             frames don't match.
 
     Example:
@@ -237,26 +266,31 @@ def add_secondary_y(
         >>> temp_fig = xpx(temp).line()
         >>> precip_fig = xpx(precip).bar()
         >>> combined = add_secondary_y(temp_fig, precip_fig)
+        >>>
+        >>> # With facets
+        >>> data = xr.DataArray(np.random.rand(10, 3), dims=["x", "facet"])
+        >>> fig1 = xpx(data).line(facet_col="facet")
+        >>> fig2 = xpx(data * 100).bar(facet_col="facet")  # Different scale
+        >>> combined = add_secondary_y(fig1, fig2)
     """
     import plotly.graph_objects as go
 
-    # Check for facets - not supported with secondary y
+    # Get axis pairs from both figures
     base_axes = _get_subplot_axes(base)
     secondary_axes = _get_subplot_axes(secondary)
 
-    if len(base_axes) > 1 or base_axes != {("x", "y")}:
+    # Validate same facet structure
+    if base_axes != secondary_axes:
         raise ValueError(
-            "Base figure has facets (subplots). Secondary y-axis is not supported "
-            "with faceted figures."
-        )
-    if len(secondary_axes) > 1 or secondary_axes != {("x", "y")}:
-        raise ValueError(
-            "Secondary figure has facets (subplots). Secondary y-axis is not supported "
-            "with faceted figures."
+            f"Base and secondary figures must have the same facet structure. "
+            f"Base has {base_axes}, secondary has {secondary_axes}."
         )
 
     # Validate animation compatibility
     _validate_animation_compatibility(base, secondary)
+
+    # Build mapping from primary y-axes to secondary y-axes
+    y_mapping = _build_secondary_y_mapping(base_axes)
 
     # Create new figure with base's layout
     combined = go.Figure(layout=copy.deepcopy(base.layout))
@@ -265,42 +299,61 @@ def add_secondary_y(
     for trace in base.data:
         combined.add_trace(copy.deepcopy(trace))
 
-    # Add all traces from secondary, assigned to y2
+    # Add all traces from secondary, remapped to secondary y-axes
     for trace in secondary.data:
         trace_copy = copy.deepcopy(trace)
-        trace_copy.yaxis = "y2"
+        original_yaxis = getattr(trace_copy, "yaxis", None) or "y"
+        trace_copy.yaxis = y_mapping[original_yaxis]
         combined.add_trace(trace_copy)
 
-    # Configure secondary y-axis
-    y2_title = secondary_y_title
-    if y2_title is None and secondary.layout.yaxis and secondary.layout.yaxis.title:
-        y2_title = secondary.layout.yaxis.title.text
+    # Configure secondary y-axes
+    for primary_yaxis, secondary_yaxis in y_mapping.items():
+        # Get title - only set on first secondary axis or use provided title
+        title = None
+        if secondary_y_title is not None:
+            # Only set title on the first secondary axis to avoid repetition
+            if primary_yaxis == "y":
+                title = secondary_y_title
+        elif primary_yaxis == "y" and secondary.layout.yaxis and secondary.layout.yaxis.title:
+            # Try to get from secondary's layout
+            title = secondary.layout.yaxis.title.text
 
-    combined.update_layout(
-        yaxis2={
-            "title": y2_title,
-            "overlaying": "y",
+        # Configure the secondary axis
+        axis_config = {
+            "title": title,
+            "overlaying": primary_yaxis,
             "side": "right",
-        },
-    )
+            "anchor": "free" if primary_yaxis != "y" else None,
+        }
+        # Remove None values
+        axis_config = {k: v for k, v in axis_config.items() if v is not None}
+
+        # Convert y2 -> yaxis2, y3 -> yaxis3, etc. for layout property name
+        layout_prop = "yaxis" if secondary_yaxis == "y" else f"yaxis{secondary_yaxis[1:]}"
+        combined.update_layout(**{layout_prop: axis_config})
 
     # Handle animation frames
     if base.frames:
-        merged_frames = _merge_secondary_y_frames(base, secondary)
+        merged_frames = _merge_secondary_y_frames(base, secondary, y_mapping)
         combined.frames = merged_frames
 
     return combined
 
 
-def _merge_secondary_y_frames(base: go.Figure, secondary: go.Figure) -> list:
+def _merge_secondary_y_frames(
+    base: go.Figure,
+    secondary: go.Figure,
+    y_mapping: dict[str, str],
+) -> list:
     """Merge animation frames for secondary y-axis combination.
 
     Args:
         base: The base figure with animation frames.
         secondary: The secondary figure (may or may not have frames).
+        y_mapping: Mapping from primary y-axis names to secondary y-axis names.
 
     Returns:
-        List of merged frames with secondary traces assigned to y2.
+        List of merged frames with secondary traces assigned to secondary y-axes.
     """
     import plotly.graph_objects as go
 
@@ -316,18 +369,18 @@ def _merge_secondary_y_frames(base: go.Figure, secondary: go.Figure) -> list:
             # Find matching frame in secondary
             secondary_frame = next((f for f in secondary.frames if f.name == frame_name), None)
             if secondary_frame:
-                # Add secondary frame data with y2 assignment
+                # Add secondary frame data with remapped y-axis
                 for trace_data in secondary_frame.data:
                     trace_copy = copy.deepcopy(trace_data)
-                    if hasattr(trace_copy, "yaxis"):
-                        trace_copy.yaxis = "y2"
+                    original_yaxis = getattr(trace_copy, "yaxis", None) or "y"
+                    trace_copy.yaxis = y_mapping.get(original_yaxis, original_yaxis)
                     merged_data.append(trace_copy)
         else:
             # Static secondary: replicate traces to this frame
             for trace in secondary.data:
                 trace_copy = copy.deepcopy(trace)
-                if hasattr(trace_copy, "yaxis"):
-                    trace_copy.yaxis = "y2"
+                original_yaxis = getattr(trace_copy, "yaxis", None) or "y"
+                trace_copy.yaxis = y_mapping.get(original_yaxis, original_yaxis)
                 merged_data.append(trace_copy)
 
         merged_frames.append(

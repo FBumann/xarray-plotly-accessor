@@ -427,34 +427,92 @@ class TestAddSecondaryYBasic:
         assert combined.layout.yaxis2.title.text == "Rain (mm)"
 
 
-class TestAddSecondaryYFacetsError:
-    """Tests for add_secondary_y error handling with facets."""
+class TestAddSecondaryYFacets:
+    """Tests for add_secondary_y with faceted figures."""
 
-    def test_base_with_facets_raises(self) -> None:
-        """Test that base figure with facets raises ValueError."""
-        da = xr.DataArray(
-            np.random.rand(10, 2),
+    @pytest.fixture(autouse=True)
+    def setup(self) -> None:
+        """Set up test data."""
+        self.da = xr.DataArray(
+            np.random.rand(10, 3),
             dims=["time", "facet"],
-            coords={"time": np.arange(10), "facet": ["A", "B"]},
+            coords={"time": np.arange(10), "facet": ["A", "B", "C"]},
+            name="value",
         )
-        base = xpx(da).line(facet_col="facet")
-        secondary = xpx(da.isel(facet=0)).bar()
+        # Different scale for secondary
+        self.da_secondary = xr.DataArray(
+            np.random.rand(10, 3) * 1000,
+            dims=["time", "facet"],
+            coords={"time": np.arange(10), "facet": ["A", "B", "C"]},
+            name="large_value",
+        )
 
-        with pytest.raises(ValueError, match="Base figure has facets"):
+    def test_matching_facets_works(self) -> None:
+        """Test that matching facet structures work."""
+        base = xpx(self.da).line(facet_col="facet")
+        secondary = xpx(self.da_secondary).bar(facet_col="facet")
+
+        combined = add_secondary_y(base, secondary)
+
+        assert isinstance(combined, go.Figure)
+        expected_traces = len(base.data) + len(secondary.data)
+        assert len(combined.data) == expected_traces
+
+    def test_facets_creates_multiple_secondary_axes(self) -> None:
+        """Test that secondary y-axes are created for each facet."""
+        base = xpx(self.da).line(facet_col="facet")
+        secondary = xpx(self.da_secondary).bar(facet_col="facet")
+
+        combined = add_secondary_y(base, secondary)
+
+        # Should have yaxis2 (secondary for y), yaxis5 (secondary for y2), etc.
+        # Base has y, y2, y3, so secondary should be y4, y5, y6
+        layout_json = combined.layout.to_plotly_json()
+        assert "yaxis4" in layout_json
+        assert layout_json["yaxis4"]["overlaying"] == "y"
+        assert layout_json["yaxis4"]["side"] == "right"
+
+    def test_secondary_traces_remapped_to_correct_axes(self) -> None:
+        """Test that secondary traces use correct secondary y-axes."""
+        base = xpx(self.da).line(facet_col="facet")
+        secondary = xpx(self.da_secondary).bar(facet_col="facet")
+
+        combined = add_secondary_y(base, secondary)
+
+        # Get secondary trace y-axes
+        secondary_trace_yaxes = {trace.yaxis for trace in combined.data[len(base.data) :]}
+        # Should be y4, y5, y6 (secondary axes)
+        assert secondary_trace_yaxes == {"y4", "y5", "y6"}
+
+    def test_mismatched_facets_raises(self) -> None:
+        """Test that mismatched facet structures raise ValueError."""
+        # Base with facets
+        base = xpx(self.da).line(facet_col="facet")
+        # Secondary without facets
+        secondary = xpx(self.da.isel(facet=0)).bar()
+
+        with pytest.raises(ValueError, match="same facet structure"):
             add_secondary_y(base, secondary)
 
-    def test_secondary_with_facets_raises(self) -> None:
-        """Test that secondary figure with facets raises ValueError."""
-        da = xr.DataArray(
-            np.random.rand(10, 2),
-            dims=["time", "facet"],
-            coords={"time": np.arange(10), "facet": ["A", "B"]},
-        )
-        base = xpx(da.isel(facet=0)).line()
-        secondary = xpx(da).bar(facet_col="facet")
+    def test_mismatched_facets_reversed_raises(self) -> None:
+        """Test that mismatched facets raise (base without, secondary with)."""
+        # Base without facets
+        base = xpx(self.da.isel(facet=0)).line()
+        # Secondary with facets
+        secondary = xpx(self.da).bar(facet_col="facet")
 
-        with pytest.raises(ValueError, match="Secondary figure has facets"):
+        with pytest.raises(ValueError, match="same facet structure"):
             add_secondary_y(base, secondary)
+
+    def test_facets_with_custom_title(self) -> None:
+        """Test custom secondary y-axis title with facets."""
+        base = xpx(self.da).line(facet_col="facet")
+        secondary = xpx(self.da_secondary).bar(facet_col="facet")
+
+        combined = add_secondary_y(base, secondary, secondary_y_title="Custom Title")
+
+        # Title should be on the first secondary axis
+        assert combined.layout.yaxis4.title.text == "Custom Title"
 
 
 class TestAddSecondaryYAnimation:
