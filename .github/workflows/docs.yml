@@ -3,13 +3,28 @@ name: Docs
 on:
   pull_request:
     branches: [main]
+  workflow_dispatch:  # Manual trigger
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+
+permissions:
+  contents: write
 
 jobs:
   docs:
     runs-on: ubuntu-latest
+    # Run on PR, manual trigger, or successful Release
+    if: |
+      github.event_name == 'pull_request' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          # For workflow_run, checkout the commit that triggered Release
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -19,3 +34,11 @@ jobs:
 
       - name: Build docs
         run: uv run mkdocs build
+
+      - name: Deploy to GitHub Pages
+        # Deploy on manual trigger or after successful Release
+        if: github.event_name != 'pull_request'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
