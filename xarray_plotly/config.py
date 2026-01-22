@@ -26,6 +26,7 @@ DEFAULT_SLOT_ORDERS: dict[str, tuple[str, ...]] = {
         "animation_frame",
     ),
     "bar": ("x", "color", "pattern_shape", "facet_col", "facet_row", "animation_frame"),
+    "fast_bar": ("x", "color", "facet_col", "facet_row", "animation_frame"),
     "area": (
         "x",
         "color",

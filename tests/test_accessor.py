@@ -146,6 +146,66 @@ class TestDataArrayPxplot:
         fig = self.da_2d.plotly.area()
         assert isinstance(fig, go.Figure)
 
+    def test_fast_bar_returns_figure(self) -> None:
+        """Test that fast_bar() returns a Plotly Figure."""
+        fig = self.da_2d.plotly.fast_bar()
+        assert isinstance(fig, go.Figure)
+
+    def test_fast_bar_trace_styling(self) -> None:
+        """Test that fast_bar applies correct trace styling."""
+        fig = self.da_2d.plotly.fast_bar()
+        for trace in fig.data:
+            assert trace.line.width == 0
+            assert trace.line.shape == "hv"
+            assert trace.fillcolor is not None
+
+    def test_fast_bar_animation_frames(self) -> None:
+        """Test that fast_bar styling applies to animation frames."""
+        da = xr.DataArray(
+            np.random.rand(5, 3, 4),
+            dims=["time", "city", "year"],
+        )
+        fig = da.plotly.fast_bar(animation_frame="year")
+        assert len(fig.frames) > 0
+        for frame in fig.frames:
+            for trace in frame.data:
+                assert trace.line.width == 0
+                assert trace.line.shape == "hv"
+                assert trace.fillcolor is not None
+
+    def test_fast_bar_mixed_signs_dashed(self) -> None:
+        """Test that fast_bar shows mixed-sign traces as dashed lines."""
+        da = xr.DataArray(
+            np.array([[50, -30], [-40, 60]]),  # Both columns have mixed signs
+            dims=["time", "category"],
+        )
+        fig = da.plotly.fast_bar()
+        # Mixed traces should have no stacking and dashed lines
+        for trace in fig.data:
+            assert trace.stackgroup is None
+            assert trace.line.dash == "dash"
+
+    def test_fast_bar_separate_sign_columns(self) -> None:
+        """Test that fast_bar uses separate stackgroups when columns have different signs."""
+        da = xr.DataArray(
+            np.array([[50, -30], [60, -40]]),  # Column 0 positive, column 1 negative
+            dims=["time", "category"],
+        )
+        fig = da.plotly.fast_bar()
+        stackgroups = {trace.stackgroup for trace in fig.data}
+        assert "positive" in stackgroups
+        assert "negative" in stackgroups
+
+    def test_fast_bar_same_sign_stacks(self) -> None:
+        """Test that fast_bar uses stacking for same-sign data."""
+        da = xr.DataArray(
+            np.random.rand(5, 3) * 100,
+            dims=["time", "category"],
+        )
+        fig = da.plotly.fast_bar()
+        for trace in fig.data:
+            assert trace.stackgroup is not None
+
     def test_scatter_returns_figure(self) -> None:
         """Test that scatter() returns a Plotly Figure."""
         fig = self.da_2d.plotly.scatter()

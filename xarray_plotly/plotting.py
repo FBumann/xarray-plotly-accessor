@@ -4,6 +4,7 @@ Plotly Express plotting functions for DataArray objects.
 
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -165,6 +166,169 @@ def bar(
         labels=labels,
         **px_kwargs,
     )
+
+
+def _classify_trace_sign(y_values: np.ndarray) -> str:
+    """Classify a trace as 'positive', 'negative', or 'mixed' based on its values."""
+    y_arr = np.asarray(y_values)
+    y_clean = y_arr[np.isfinite(y_arr) & (np.abs(y_arr) > 1e-9)]
+    if len(y_clean) == 0:
+        return "zero"
+    has_pos = bool(np.any(y_clean > 0))
+    has_neg = bool(np.any(y_clean < 0))
+    if has_pos and has_neg:
+        return "mixed"
+    elif has_neg:
+        return "negative"
+    elif has_pos:
+        return "positive"
+    return "zero"
+
+
+def _style_traces_as_bars(fig: go.Figure) -> None:
+    """Style area chart traces to look like bar charts with proper pos/neg stacking.
+
+    Classifies each trace (by name) across all data and animation frames,
+    then assigns stackgroups: positive traces stack upward, negative stack downward.
+    """
+    # Collect all traces (main + animation frames)
+    all_traces = list(fig.data)
+    for frame in fig.frames:
+        all_traces.extend(frame.data)
+
+    # Classify each trace name by aggregating sign info across all occurrences
+    sign_flags: dict[str, dict[str, bool]] = {}
+    for trace in all_traces:
+        if trace.name not in sign_flags:
+            sign_flags[trace.name] = {"has_pos": False, "has_neg": False}
+        if trace.y is not None and len(trace.y) > 0:
+            y_arr = np.asarray(trace.y)
+            y_clean = y_arr[np.isfinite(y_arr) & (np.abs(y_arr) > 1e-9)]
+            if len(y_clean) > 0:
+                if np.any(y_clean > 0):
+                    sign_flags[trace.name]["has_pos"] = True
+                if np.any(y_clean < 0):
+                    sign_flags[trace.name]["has_neg"] = True
+
+    # Build classification map
+    class_map: dict[str, str] = {}
+    mixed_traces: list[str] = []
+    for name, flags in sign_flags.items():
+        if flags["has_pos"] and flags["has_neg"]:
+            class_map[name] = "mixed"
+            mixed_traces.append(name)
+        elif flags["has_neg"]:
+            class_map[name] = "negative"
+        elif flags["has_pos"]:
+            class_map[name] = "positive"
+        else:
+            class_map[name] = "zero"
+
+    # Warn about mixed traces
+    if mixed_traces:
+        warnings.warn(
+            f"fast_bar: traces {mixed_traces} have mixed positive/negative values "
+            "and cannot be stacked. They are shown as dashed lines. "
+            "Consider using bar() for proper stacking of mixed data.",
+            UserWarning,
+            stacklevel=3,
+        )
+
+    # Apply styling to all traces
+    for trace in all_traces:
+        color = trace.line.color
+        cls = class_map.get(trace.name, "positive")
+
+        if cls in ("positive", "negative"):
+            trace.stackgroup = cls
+            trace.fillcolor = color
+            trace.line = {"width": 0, "color": color, "shape": "hv"}
+        elif cls == "mixed":
+            # Mixed: no stacking, show as dashed line
+            trace.stackgroup = None
+            trace.fill = None
+            trace.line = {"width": 2, "color": color, "shape": "hv", "dash": "dash"}
+        else:  # zero
+            trace.stackgroup = None
+            trace.fill = None
+            trace.line = {"width": 0, "color": color, "shape": "hv"}
+
+
+def fast_bar(
+    darray: DataArray,
+    *,
+    x: SlotValue = auto,
+    color: SlotValue = auto,
+    facet_col: SlotValue = auto,
+    facet_row: SlotValue = auto,
+    animation_frame: SlotValue = auto,
+    **px_kwargs: Any,
+) -> go.Figure:
+    """
+    Create a bar-like chart using stacked areas for better performance.
+
+    Uses `px.area` with stepped lines and no outline to create a bar-like
+    appearance. Renders faster than `bar()` for large datasets because it
+    uses a single polygon per trace instead of individual rectangles.
+
+    The y-axis shows DataArray values. Dimensions fill slots in order:
+    x -> color -> facet_col -> facet_row -> animation_frame
+
+    Traces are classified by their values: purely positive traces stack upward,
+    purely negative traces stack downward. Traces with mixed signs are shown
+    as dashed lines without stacking.
+
+    Parameters
+    ----------
+    darray
+        The DataArray to plot.
+    x
+        Dimension for x-axis. Default: first dimension.
+    color
+        Dimension for color/stacking. Default: second dimension.
+    facet_col
+        Dimension for subplot columns. Default: third dimension.
+    facet_row
+        Dimension for subplot rows. Default: fourth dimension.
+    animation_frame
+        Dimension for animation. Default: fifth dimension.
+    **px_kwargs
+        Additional arguments passed to `plotly.express.area()`.
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+    """
+    slots = assign_slots(
+        list(darray.dims),
+        "fast_bar",
+        x=x,
+        color=color,
+        facet_col=facet_col,
+        facet_row=facet_row,
+        animation_frame=animation_frame,
+    )
+
+    df = to_dataframe(darray)
+    value_col = get_value_col(darray)
+    labels = {**build_labels(darray, slots, value_col), **px_kwargs.pop("labels", {})}
+
+    fig = px.area(
+        df,
+        x=slots.get("x"),
+        y=value_col,
+        color=slots.get("color"),
+        facet_col=slots.get("facet_col"),
+        facet_row=slots.get("facet_row"),
+        animation_frame=slots.get("animation_frame"),
+        line_shape="hv",
+        labels=labels,
+        **px_kwargs,
+    )
+
+    _style_traces_as_bars(fig)
+
+    return fig
 
 
 def area(
