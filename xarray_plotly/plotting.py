@@ -167,23 +167,12 @@ def bar(
     )
 
 
-def _apply_barlike_style(traces: tuple, mixed_signs: bool = False) -> None:
-    """Apply bar-like styling to area traces (in-place).
-
-    Parameters
-    ----------
-    traces
-        The traces to style.
-    mixed_signs
-        If True, disable stacking and fill to zero for mixed positive/negative data.
-    """
+def _apply_barlike_style(traces: tuple) -> None:
+    """Apply bar-like styling to area traces (in-place)."""
     for trace in traces:
         color = trace.line.color
         trace.fillcolor = color
         trace.line = {"width": 0, "color": color, "shape": "hv"}
-        if mixed_signs:
-            trace.stackgroup = None
-            trace.fill = "tozeroy"
 
 
 def _has_mixed_signs(values: np.ndarray) -> bool:
@@ -192,6 +181,60 @@ def _has_mixed_signs(values: np.ndarray) -> bool:
     if len(finite) == 0:
         return False
     return bool(np.any(finite > 0) and np.any(finite < 0))
+
+
+def _split_traces_by_sign(traces: tuple) -> list:
+    """Split traces into separate positive and negative stackgroups.
+
+    For mixed positive/negative data, this creates proper bar-like stacking
+    where positives stack upward and negatives stack downward from zero.
+    """
+    import plotly.graph_objects as go
+
+    new_traces = []
+    for trace in traces:
+        y_values = np.array(trace.y)
+        color = trace.line.color
+        name = trace.name
+
+        # Positive trace (negatives become 0)
+        y_pos = np.clip(y_values, 0, None)
+        if np.any(y_pos > 0):
+            new_traces.append(
+                go.Scatter(
+                    x=trace.x,
+                    y=y_pos,
+                    name=name,
+                    stackgroup="positive",
+                    line={"width": 0, "shape": "hv", "color": color},
+                    fillcolor=color,
+                    mode="lines",
+                    legendgroup=name,
+                    xaxis=trace.xaxis,
+                    yaxis=trace.yaxis,
+                )
+            )
+
+        # Negative trace (positives become 0)
+        y_neg = np.clip(y_values, None, 0)
+        if np.any(y_neg < 0):
+            new_traces.append(
+                go.Scatter(
+                    x=trace.x,
+                    y=y_neg,
+                    name=name,
+                    stackgroup="negative",
+                    line={"width": 0, "shape": "hv", "color": color},
+                    fillcolor=color,
+                    mode="lines",
+                    legendgroup=name,
+                    showlegend=False,
+                    xaxis=trace.xaxis,
+                    yaxis=trace.yaxis,
+                )
+            )
+
+    return new_traces
 
 
 def fast_bar(
@@ -214,9 +257,8 @@ def fast_bar(
     The y-axis shows DataArray values. Dimensions fill slots in order:
     x -> color -> facet_col -> facet_row -> animation_frame
 
-    Note: For mixed positive/negative data, stacking is disabled and each
-    series fills independently to zero. For best stacking behavior with
-    mixed data, use `bar()` instead.
+    For mixed positive/negative data, positives stack upward and negatives
+    stack downward from zero, similar to bar chart behavior.
 
     Parameters
     ----------
@@ -239,6 +281,8 @@ def fast_bar(
     -------
     plotly.graph_objects.Figure
     """
+    import plotly.graph_objects as go
+
     slots = assign_slots(
         list(darray.dims),
         "fast_bar",
@@ -256,7 +300,7 @@ def fast_bar(
     value_col = get_value_col(darray)
     labels = {**build_labels(darray, slots, value_col), **px_kwargs.pop("labels", {})}
 
-    fig = px.area(
+    base_fig = px.area(
         df,
         x=slots.get("x"),
         y=value_col,
@@ -269,9 +313,23 @@ def fast_bar(
         **px_kwargs,
     )
 
-    _apply_barlike_style(fig.data, mixed_signs)
-    for frame in fig.frames:
-        _apply_barlike_style(frame.data, mixed_signs)
+    if mixed_signs:
+        # Split traces into positive/negative stackgroups for proper stacking
+        new_traces = _split_traces_by_sign(base_fig.data)
+        fig = go.Figure(data=new_traces, layout=base_fig.layout)
+
+        # Handle animation frames
+        new_frames = []
+        for frame in base_fig.frames:
+            frame_traces = _split_traces_by_sign(frame.data)
+            new_frames.append(go.Frame(data=frame_traces, name=frame.name))
+        fig.frames = new_frames
+    else:
+        # Simple case: just apply bar-like styling
+        fig = base_fig
+        _apply_barlike_style(fig.data)
+        for frame in fig.frames:
+            _apply_barlike_style(frame.data)
 
     return fig
 
