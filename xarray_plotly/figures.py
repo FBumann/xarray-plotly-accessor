@@ -142,6 +142,7 @@ def _merge_frames(
                 data=merged_data,
                 name=frame_name,
                 traces=list(range(base_trace_count + sum(overlay_trace_counts))),
+                layout=base_frame.layout,
             )
         )
 
@@ -403,6 +404,7 @@ def _merge_secondary_y_frames(
                 data=merged_data,
                 name=frame_name,
                 traces=list(range(base_trace_count + secondary_trace_count)),
+                layout=base_frame.layout,
             )
         )
 
