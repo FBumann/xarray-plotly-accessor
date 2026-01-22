@@ -131,6 +131,7 @@ class DataArrayPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
+        barlike: bool = False,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive stacked area chart.
@@ -144,6 +145,7 @@ class DataArrayPlotlyAccessor:
             facet_col: Dimension for subplot columns. Default: fourth dimension.
             facet_row: Dimension for subplot rows. Default: fifth dimension.
             animation_frame: Dimension for animation. Default: sixth dimension.
+            barlike: If True, style as bar chart (stepped, no outline). Faster than bars.
             **px_kwargs: Additional arguments passed to `plotly.express.area()`.
 
         Returns:
@@ -157,6 +159,7 @@ class DataArrayPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            barlike=barlike,
             **px_kwargs,
         )
 
@@ -472,6 +475,7 @@ class DatasetPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
+        barlike: bool = False,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive stacked area chart.
@@ -484,6 +488,7 @@ class DatasetPlotlyAccessor:
             facet_col: Dimension for subplot columns.
             facet_row: Dimension for subplot rows.
             animation_frame: Dimension for animation.
+            barlike: If True, style as bar chart (stepped, no outline). Faster than bars.
             **px_kwargs: Additional arguments passed to `plotly.express.area()`.
 
         Returns:
@@ -498,6 +503,7 @@ class DatasetPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            barlike=barlike,
             **px_kwargs,
         )
 

@@ -167,6 +167,14 @@ def bar(
     )
 
 
+def _apply_barlike_style(traces: tuple) -> None:
+    """Apply bar-like styling to area traces (in-place)."""
+    for trace in traces:
+        color = trace.line.color
+        trace.fillcolor = color
+        trace.line = {"width": 0, "color": color, "shape": "hv"}
+
+
 def area(
     darray: DataArray,
     *,
@@ -176,6 +184,7 @@ def area(
     facet_col: SlotValue = auto,
     facet_row: SlotValue = auto,
     animation_frame: SlotValue = auto,
+    barlike: bool = False,
     **px_kwargs: Any,
 ) -> go.Figure:
     """
@@ -200,6 +209,10 @@ def area(
         Dimension for subplot rows. Default: fifth dimension.
     animation_frame
         Dimension for animation. Default: sixth dimension.
+    barlike
+        If True, style the area chart to look like a bar chart using stepped
+        lines with no outline. Renders faster than bar charts for large data.
+        Default: False.
     **px_kwargs
         Additional arguments passed to `plotly.express.area()`.
 
@@ -218,11 +231,14 @@ def area(
         animation_frame=animation_frame,
     )
 
+    if barlike:
+        px_kwargs.setdefault("line_shape", "hv")
+
     df = to_dataframe(darray)
     value_col = get_value_col(darray)
     labels = {**build_labels(darray, slots, value_col), **px_kwargs.pop("labels", {})}
 
-    return px.area(
+    fig = px.area(
         df,
         x=slots.get("x"),
         y=value_col,
@@ -234,6 +250,13 @@ def area(
         labels=labels,
         **px_kwargs,
     )
+
+    if barlike:
+        _apply_barlike_style(fig.data)
+        for frame in fig.frames:
+            _apply_barlike_style(frame.data)
+
+    return fig
 
 
 def box(

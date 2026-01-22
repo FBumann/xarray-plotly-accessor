@@ -146,6 +146,33 @@ class TestDataArrayPxplot:
         fig = self.da_2d.plotly.area()
         assert isinstance(fig, go.Figure)
 
+    def test_area_barlike_returns_figure(self) -> None:
+        """Test that area(barlike=True) returns a Plotly Figure."""
+        fig = self.da_2d.plotly.area(barlike=True)
+        assert isinstance(fig, go.Figure)
+
+    def test_area_barlike_trace_styling(self) -> None:
+        """Test that barlike applies correct trace styling."""
+        fig = self.da_2d.plotly.area(barlike=True)
+        for trace in fig.data:
+            assert trace.line.width == 0
+            assert trace.line.shape == "hv"
+            assert trace.fillcolor is not None
+
+    def test_area_barlike_animation_frames(self) -> None:
+        """Test that barlike styling applies to animation frames."""
+        da = xr.DataArray(
+            np.random.rand(5, 3, 4),
+            dims=["time", "city", "year"],
+        )
+        fig = da.plotly.area(animation_frame="year", barlike=True)
+        assert len(fig.frames) > 0
+        for frame in fig.frames:
+            for trace in frame.data:
+                assert trace.line.width == 0
+                assert trace.line.shape == "hv"
+                assert trace.fillcolor is not None
+
     def test_scatter_returns_figure(self) -> None:
         """Test that scatter() returns a Plotly Figure."""
         fig = self.da_2d.plotly.scatter()
