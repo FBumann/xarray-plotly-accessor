@@ -390,7 +390,7 @@ def _merge_secondary_y_frames(
     return merged_frames
 
 
-def update_animation_traces(fig: go.Figure, selector: dict | None = None, **kwargs) -> go.Figure:
+def update_traces(fig: go.Figure, selector: dict | None = None, **kwargs) -> go.Figure:
     """Update traces in both base figure and all animation frames.
 
     Plotly's `update_traces()` only updates the base figure, not animation frames.
@@ -407,16 +407,16 @@ def update_animation_traces(fig: go.Figure, selector: dict | None = None, **kwar
 
     Example:
         >>> import plotly.express as px
-        >>> from xarray_plotly import update_animation_traces
+        >>> from xarray_plotly import update_traces
         >>>
         >>> df = px.data.gapminder()
         >>> fig = px.line(df, x="year", y="gdpPercap", color="country", animation_frame="continent")
         >>>
         >>> # Update all traces
-        >>> update_animation_traces(fig, line_width=3)
+        >>> update_traces(fig, line_width=3)
         >>>
         >>> # Update specific trace by name
-        >>> update_animation_traces(fig, selector={"name": "Germany"}, line_width=5, line_dash="dot")
+        >>> update_traces(fig, selector={"name": "Germany"}, line_width=5, line_dash="dot")
     """
     fig.update_traces(selector=selector, **kwargs)
 
