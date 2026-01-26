@@ -5,7 +5,7 @@ Helper functions for combining and manipulating Plotly figures.
 from __future__ import annotations
 
 import copy
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     import plotly.graph_objects as go
 
 
-def _iter_all_traces(fig: go.Figure) -> Iterator:
+def _iter_all_traces(fig: go.Figure) -> Iterator[Any]:
     """Iterate over all traces in a figure, including animation frames.
 
     Yields traces from fig.data first, then from each frame in fig.frames.
@@ -107,7 +107,7 @@ def _merge_frames(
     overlays: list[go.Figure],
     base_trace_count: int,
     overlay_trace_counts: list[int],
-) -> list:
+) -> list[go.Frame]:
     """Merge animation frames from base and overlay figures.
 
     Args:
@@ -360,7 +360,7 @@ def _merge_secondary_y_frames(
     base: go.Figure,
     secondary: go.Figure,
     y_mapping: dict[str, str],
-) -> list:
+) -> list[go.Frame]:
     """Merge animation frames for secondary y-axis combination.
 
     Args:
@@ -411,7 +411,9 @@ def _merge_secondary_y_frames(
     return merged_frames
 
 
-def update_traces(fig: go.Figure, selector: dict | None = None, **kwargs) -> go.Figure:
+def update_traces(
+    fig: go.Figure, selector: dict[str, Any] | None = None, **kwargs: Any
+) -> go.Figure:
     """Update traces in both base figure and all animation frames.
 
     Plotly's `update_traces()` only updates the base figure, not animation frames.

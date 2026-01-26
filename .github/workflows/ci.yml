@@ -31,6 +31,9 @@ jobs:
       - name: Format check
         run: uv run ruff format --check .
 
+      - name: Type check
+        run: uv run mypy xarray_plotly
+
       - name: Test
         run: uv run pytest --cov=xarray_plotly --cov-report=xml
 
