@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -166,12 +166,12 @@ def set_options(
         yield
     finally:
         # Restore old values (modify in place)
-        _options.label_use_long_name = old_values["label_use_long_name"]
-        _options.label_use_standard_name = old_values["label_use_standard_name"]
-        _options.label_include_units = old_values["label_include_units"]
-        _options.label_unit_format = old_values["label_unit_format"]
-        _options.slot_orders = old_values["slot_orders"]
-        _options.dataset_variable_position = old_values["dataset_variable_position"]
+        _options.label_use_long_name = cast("bool", old_values["label_use_long_name"])
+        _options.label_use_standard_name = cast("bool", old_values["label_use_standard_name"])
+        _options.label_include_units = cast("bool", old_values["label_include_units"])
+        _options.label_unit_format = cast("str", old_values["label_unit_format"])
+        _options.slot_orders = cast("dict[str, tuple[str, ...]]", old_values["slot_orders"])
+        _options.dataset_variable_position = cast("int", old_values["dataset_variable_position"])
 
 
 def notebook(renderer: str = "notebook") -> None:

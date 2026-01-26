@@ -8,6 +8,7 @@ import warnings
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
+import numpy.typing as npt
 import plotly.express as px
 
 from xarray_plotly.common import (
@@ -191,7 +192,7 @@ def bar(
     )
 
 
-def _classify_trace_sign(y_values: np.ndarray) -> str:
+def _classify_trace_sign(y_values: npt.ArrayLike) -> str:
     """Classify a trace as 'positive', 'negative', or 'mixed' based on its values."""
     y_arr = np.asarray(y_values)
     y_clean = y_arr[np.isfinite(y_arr) & (np.abs(y_arr) > 1e-9)]

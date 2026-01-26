@@ -159,7 +159,7 @@ def to_dataframe(darray: DataArray) -> pd.DataFrame:
     return df
 
 
-def _get_label_from_attrs(attrs: dict, fallback: str) -> str:
+def _get_label_from_attrs(attrs: dict[str, object], fallback: str) -> str:
     """Extract a label from xarray attributes based on current config.
 
     Args:
