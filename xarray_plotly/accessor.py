@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 from xarray import DataArray, Dataset
 
 from xarray_plotly import plotting
-from xarray_plotly.common import SlotValue, auto
+from xarray_plotly.common import Colors, SlotValue, auto
 from xarray_plotly.config import _options
 
 
@@ -53,6 +53,7 @@ class DataArrayPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive line plot.
@@ -67,6 +68,7 @@ class DataArrayPlotlyAccessor:
             facet_col: Dimension for subplot columns. Default: fifth dimension.
             facet_row: Dimension for subplot rows. Default: sixth dimension.
             animation_frame: Dimension for animation. Default: seventh dimension.
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.line()`.
 
         Returns:
@@ -81,6 +83,7 @@ class DataArrayPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -93,6 +96,7 @@ class DataArrayPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive bar chart.
@@ -106,6 +110,7 @@ class DataArrayPlotlyAccessor:
             facet_col: Dimension for subplot columns. Default: fourth dimension.
             facet_row: Dimension for subplot rows. Default: fifth dimension.
             animation_frame: Dimension for animation. Default: sixth dimension.
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.bar()`.
 
         Returns:
@@ -119,6 +124,7 @@ class DataArrayPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -131,6 +137,7 @@ class DataArrayPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive stacked area chart.
@@ -144,6 +151,7 @@ class DataArrayPlotlyAccessor:
             facet_col: Dimension for subplot columns. Default: fourth dimension.
             facet_row: Dimension for subplot rows. Default: fifth dimension.
             animation_frame: Dimension for animation. Default: sixth dimension.
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.area()`.
 
         Returns:
@@ -157,6 +165,7 @@ class DataArrayPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -168,6 +177,7 @@ class DataArrayPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create a bar-like chart using stacked areas for better performance.
@@ -180,6 +190,7 @@ class DataArrayPlotlyAccessor:
             facet_col: Dimension for subplot columns. Default: third dimension.
             facet_row: Dimension for subplot rows. Default: fourth dimension.
             animation_frame: Dimension for animation. Default: fifth dimension.
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.area()`.
 
         Returns:
@@ -192,6 +203,7 @@ class DataArrayPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -205,6 +217,7 @@ class DataArrayPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive scatter plot.
@@ -223,6 +236,7 @@ class DataArrayPlotlyAccessor:
             facet_col: Dimension for subplot columns. Default: fourth dimension.
             facet_row: Dimension for subplot rows. Default: fifth dimension.
             animation_frame: Dimension for animation. Default: sixth dimension.
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.scatter()`.
 
         Returns:
@@ -237,6 +251,7 @@ class DataArrayPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -248,6 +263,7 @@ class DataArrayPlotlyAccessor:
         facet_col: SlotValue = None,
         facet_row: SlotValue = None,
         animation_frame: SlotValue = None,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive box plot.
@@ -263,6 +279,7 @@ class DataArrayPlotlyAccessor:
             facet_col: Dimension for subplot columns. Default: None (aggregated).
             facet_row: Dimension for subplot rows. Default: None (aggregated).
             animation_frame: Dimension for animation. Default: None (aggregated).
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.box()`.
 
         Returns:
@@ -275,6 +292,7 @@ class DataArrayPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -286,6 +304,7 @@ class DataArrayPlotlyAccessor:
         facet_col: SlotValue = auto,
         animation_frame: SlotValue = auto,
         robust: bool = False,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive heatmap image.
@@ -303,6 +322,7 @@ class DataArrayPlotlyAccessor:
             facet_col: Dimension for subplot columns. Default: third dimension.
             animation_frame: Dimension for animation. Default: fourth dimension.
             robust: If True, use 2nd/98th percentiles for color bounds (handles outliers).
+            colors: Color scale name (e.g., "Viridis", "RdBu"). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.imshow()`.
                 Use `zmin` and `zmax` to manually set color scale bounds.
 
@@ -316,6 +336,7 @@ class DataArrayPlotlyAccessor:
             facet_col=facet_col,
             animation_frame=animation_frame,
             robust=robust,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -326,6 +347,7 @@ class DataArrayPlotlyAccessor:
         color: SlotValue = None,
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive pie chart.
@@ -337,6 +359,7 @@ class DataArrayPlotlyAccessor:
             color: Dimension for color grouping. Default: None (uses names).
             facet_col: Dimension for subplot columns. Default: second dimension.
             facet_row: Dimension for subplot rows. Default: third dimension.
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.pie()`.
 
         Returns:
@@ -348,6 +371,7 @@ class DataArrayPlotlyAccessor:
             color=color,
             facet_col=facet_col,
             facet_row=facet_row,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -427,6 +451,7 @@ class DatasetPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive line plot.
@@ -440,6 +465,7 @@ class DatasetPlotlyAccessor:
             facet_col: Dimension for subplot columns.
             facet_row: Dimension for subplot rows.
             animation_frame: Dimension for animation.
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.line()`.
 
         Returns:
@@ -455,6 +481,7 @@ class DatasetPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -468,6 +495,7 @@ class DatasetPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive bar chart.
@@ -480,6 +508,7 @@ class DatasetPlotlyAccessor:
             facet_col: Dimension for subplot columns.
             facet_row: Dimension for subplot rows.
             animation_frame: Dimension for animation.
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.bar()`.
 
         Returns:
@@ -494,6 +523,7 @@ class DatasetPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -507,6 +537,7 @@ class DatasetPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive stacked area chart.
@@ -519,6 +550,7 @@ class DatasetPlotlyAccessor:
             facet_col: Dimension for subplot columns.
             facet_row: Dimension for subplot rows.
             animation_frame: Dimension for animation.
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.area()`.
 
         Returns:
@@ -533,6 +565,7 @@ class DatasetPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -545,6 +578,7 @@ class DatasetPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create a bar-like chart using stacked areas for better performance.
@@ -556,6 +590,7 @@ class DatasetPlotlyAccessor:
             facet_col: Dimension for subplot columns.
             facet_row: Dimension for subplot rows.
             animation_frame: Dimension for animation.
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.area()`.
 
         Returns:
@@ -569,6 +604,7 @@ class DatasetPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -583,6 +619,7 @@ class DatasetPlotlyAccessor:
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
         animation_frame: SlotValue = auto,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive scatter plot.
@@ -596,6 +633,7 @@ class DatasetPlotlyAccessor:
             facet_col: Dimension for subplot columns.
             facet_row: Dimension for subplot rows.
             animation_frame: Dimension for animation.
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.scatter()`.
 
         Returns:
@@ -611,6 +649,7 @@ class DatasetPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -623,6 +662,7 @@ class DatasetPlotlyAccessor:
         facet_col: SlotValue = None,
         facet_row: SlotValue = None,
         animation_frame: SlotValue = None,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive box plot.
@@ -634,6 +674,7 @@ class DatasetPlotlyAccessor:
             facet_col: Dimension for subplot columns.
             facet_row: Dimension for subplot rows.
             animation_frame: Dimension for animation.
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.box()`.
 
         Returns:
@@ -647,6 +688,7 @@ class DatasetPlotlyAccessor:
             facet_col=facet_col,
             facet_row=facet_row,
             animation_frame=animation_frame,
+            colors=colors,
             **px_kwargs,
         )
 
@@ -658,6 +700,7 @@ class DatasetPlotlyAccessor:
         color: SlotValue = None,
         facet_col: SlotValue = auto,
         facet_row: SlotValue = auto,
+        colors: Colors = None,
         **px_kwargs: Any,
     ) -> go.Figure:
         """Create an interactive pie chart.
@@ -668,6 +711,7 @@ class DatasetPlotlyAccessor:
             color: Dimension for color grouping.
             facet_col: Dimension for subplot columns.
             facet_row: Dimension for subplot rows.
+            colors: Color specification (scale name, list, or dict). See module docs.
             **px_kwargs: Additional arguments passed to `plotly.express.pie()`.
 
         Returns:
@@ -680,5 +724,6 @@ class DatasetPlotlyAccessor:
             color=color,
             facet_col=facet_col,
             facet_row=facet_row,
+            colors=colors,
             **px_kwargs,
         )

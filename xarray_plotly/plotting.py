@@ -11,12 +11,14 @@ import numpy as np
 import plotly.express as px
 
 from xarray_plotly.common import (
+    Colors,
     SlotValue,
     assign_slots,
     auto,
     build_labels,
     get_label,
     get_value_col,
+    resolve_colors,
     to_dataframe,
 )
 from xarray_plotly.figures import (
@@ -38,6 +40,7 @@ def line(
     facet_col: SlotValue = auto,
     facet_row: SlotValue = auto,
     animation_frame: SlotValue = auto,
+    colors: Colors = None,
     **px_kwargs: Any,
 ) -> go.Figure:
     """
@@ -64,6 +67,13 @@ def line(
         Dimension for subplot rows. Default: sixth dimension.
     animation_frame
         Dimension for animation. Default: seventh dimension.
+    colors
+        Unified color specification. Can be:
+        - A named continuous scale (e.g., "Viridis")
+        - A named discrete palette (e.g., "D3", "Plotly")
+        - A list of colors (e.g., ["red", "blue", "green"])
+        - A dict mapping values to colors (e.g., {"A": "red", "B": "blue"})
+        Explicit color_* kwargs in px_kwargs take precedence.
     **px_kwargs
         Additional arguments passed to `plotly.express.line()`.
 
@@ -71,6 +81,7 @@ def line(
     -------
     plotly.graph_objects.Figure
     """
+    px_kwargs = resolve_colors(colors, px_kwargs)
     slots = assign_slots(
         list(darray.dims),
         "line",
@@ -111,6 +122,7 @@ def bar(
     facet_col: SlotValue = auto,
     facet_row: SlotValue = auto,
     animation_frame: SlotValue = auto,
+    colors: Colors = None,
     **px_kwargs: Any,
 ) -> go.Figure:
     """
@@ -135,6 +147,13 @@ def bar(
         Dimension for subplot rows. Default: fifth dimension.
     animation_frame
         Dimension for animation. Default: sixth dimension.
+    colors
+        Unified color specification. Can be:
+        - A named continuous scale (e.g., "Viridis")
+        - A named discrete palette (e.g., "D3", "Plotly")
+        - A list of colors (e.g., ["red", "blue", "green"])
+        - A dict mapping values to colors (e.g., {"A": "red", "B": "blue"})
+        Explicit color_* kwargs in px_kwargs take precedence.
     **px_kwargs
         Additional arguments passed to `plotly.express.bar()`.
 
@@ -142,6 +161,7 @@ def bar(
     -------
     plotly.graph_objects.Figure
     """
+    px_kwargs = resolve_colors(colors, px_kwargs)
     slots = assign_slots(
         list(darray.dims),
         "bar",
@@ -263,6 +283,7 @@ def fast_bar(
     facet_col: SlotValue = auto,
     facet_row: SlotValue = auto,
     animation_frame: SlotValue = auto,
+    colors: Colors = None,
     **px_kwargs: Any,
 ) -> go.Figure:
     """
@@ -293,6 +314,13 @@ def fast_bar(
         Dimension for subplot rows. Default: fourth dimension.
     animation_frame
         Dimension for animation. Default: fifth dimension.
+    colors
+        Unified color specification. Can be:
+        - A named continuous scale (e.g., "Viridis")
+        - A named discrete palette (e.g., "D3", "Plotly")
+        - A list of colors (e.g., ["red", "blue", "green"])
+        - A dict mapping values to colors (e.g., {"A": "red", "B": "blue"})
+        Explicit color_* kwargs in px_kwargs take precedence.
     **px_kwargs
         Additional arguments passed to `plotly.express.area()`.
 
@@ -300,6 +328,7 @@ def fast_bar(
     -------
     plotly.graph_objects.Figure
     """
+    px_kwargs = resolve_colors(colors, px_kwargs)
     slots = assign_slots(
         list(darray.dims),
         "fast_bar",
@@ -341,6 +370,7 @@ def area(
     facet_col: SlotValue = auto,
     facet_row: SlotValue = auto,
     animation_frame: SlotValue = auto,
+    colors: Colors = None,
     **px_kwargs: Any,
 ) -> go.Figure:
     """
@@ -365,6 +395,13 @@ def area(
         Dimension for subplot rows. Default: fifth dimension.
     animation_frame
         Dimension for animation. Default: sixth dimension.
+    colors
+        Unified color specification. Can be:
+        - A named continuous scale (e.g., "Viridis")
+        - A named discrete palette (e.g., "D3", "Plotly")
+        - A list of colors (e.g., ["red", "blue", "green"])
+        - A dict mapping values to colors (e.g., {"A": "red", "B": "blue"})
+        Explicit color_* kwargs in px_kwargs take precedence.
     **px_kwargs
         Additional arguments passed to `plotly.express.area()`.
 
@@ -372,6 +409,7 @@ def area(
     -------
     plotly.graph_objects.Figure
     """
+    px_kwargs = resolve_colors(colors, px_kwargs)
     slots = assign_slots(
         list(darray.dims),
         "area",
@@ -409,6 +447,7 @@ def box(
     facet_col: SlotValue = None,
     facet_row: SlotValue = None,
     animation_frame: SlotValue = None,
+    colors: Colors = None,
     **px_kwargs: Any,
 ) -> go.Figure:
     """
@@ -433,6 +472,13 @@ def box(
         Dimension for subplot rows. Default: None (aggregated).
     animation_frame
         Dimension for animation. Default: None (aggregated).
+    colors
+        Unified color specification. Can be:
+        - A named continuous scale (e.g., "Viridis")
+        - A named discrete palette (e.g., "D3", "Plotly")
+        - A list of colors (e.g., ["red", "blue", "green"])
+        - A dict mapping values to colors (e.g., {"A": "red", "B": "blue"})
+        Explicit color_* kwargs in px_kwargs take precedence.
     **px_kwargs
         Additional arguments passed to `plotly.express.box()`.
 
@@ -440,6 +486,7 @@ def box(
     -------
     plotly.graph_objects.Figure
     """
+    px_kwargs = resolve_colors(colors, px_kwargs)
     slots = assign_slots(
         list(darray.dims),
         "box",
@@ -478,6 +525,7 @@ def scatter(
     facet_col: SlotValue = auto,
     facet_row: SlotValue = auto,
     animation_frame: SlotValue = auto,
+    colors: Colors = None,
     **px_kwargs: Any,
 ) -> go.Figure:
     """
@@ -509,6 +557,13 @@ def scatter(
         Dimension for subplot rows. Default: fifth dimension.
     animation_frame
         Dimension for animation. Default: sixth dimension.
+    colors
+        Unified color specification. Can be:
+        - A named continuous scale (e.g., "Viridis")
+        - A named discrete palette (e.g., "D3", "Plotly")
+        - A list of colors (e.g., ["red", "blue", "green"])
+        - A dict mapping values to colors (e.g., {"A": "red", "B": "blue"})
+        Explicit color_* kwargs in px_kwargs take precedence.
     **px_kwargs
         Additional arguments passed to `plotly.express.scatter()`.
 
@@ -516,6 +571,7 @@ def scatter(
     -------
     plotly.graph_objects.Figure
     """
+    px_kwargs = resolve_colors(colors, px_kwargs)
     # If y is a dimension, exclude it from slot assignment
     y_is_dim = y != "value" and y in darray.dims
     dims_for_slots = [d for d in darray.dims if d != y] if y_is_dim else list(darray.dims)
@@ -565,6 +621,7 @@ def imshow(
     facet_col: SlotValue = auto,
     animation_frame: SlotValue = auto,
     robust: bool = False,
+    colors: Colors = None,
     **px_kwargs: Any,
 ) -> go.Figure:
     """
@@ -596,6 +653,11 @@ def imshow(
     robust
         If True, compute color bounds using 2nd and 98th percentiles
         for robustness against outliers. Default: False (uses min/max).
+    colors
+        Unified color specification. For imshow, typically a named
+        continuous scale (e.g., "Viridis", "RdBu"). Lists and dicts
+        are not applicable for heatmaps.
+        Explicit color_continuous_scale in px_kwargs takes precedence.
     **px_kwargs
         Additional arguments passed to `plotly.express.imshow()`.
         Use `zmin` and `zmax` to manually set color scale bounds.
@@ -604,6 +666,7 @@ def imshow(
     -------
     plotly.graph_objects.Figure
     """
+    px_kwargs = resolve_colors(colors, px_kwargs)
     slots = assign_slots(
         list(darray.dims),
         "imshow",
@@ -648,6 +711,7 @@ def pie(
     color: SlotValue = None,
     facet_col: SlotValue = auto,
     facet_row: SlotValue = auto,
+    colors: Colors = None,
     **px_kwargs: Any,
 ) -> go.Figure:
     """
@@ -668,6 +732,12 @@ def pie(
         Dimension for subplot columns. Default: second dimension.
     facet_row
         Dimension for subplot rows. Default: third dimension.
+    colors
+        Unified color specification. Can be:
+        - A named discrete palette (e.g., "D3", "Plotly")
+        - A list of colors (e.g., ["red", "blue", "green"])
+        - A dict mapping values to colors (e.g., {"A": "red", "B": "blue"})
+        Explicit color_* kwargs in px_kwargs take precedence.
     **px_kwargs
         Additional arguments passed to `plotly.express.pie()`.
 
@@ -675,6 +745,7 @@ def pie(
     -------
     plotly.graph_objects.Figure
     """
+    px_kwargs = resolve_colors(colors, px_kwargs)
     slots = assign_slots(
         list(darray.dims),
         "pie",

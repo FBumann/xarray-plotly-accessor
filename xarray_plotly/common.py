@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import functools
+import warnings
+from collections.abc import Hashable, Mapping, Sequence
+from typing import TYPE_CHECKING, Any
+
+import plotly.express as px
 
 from xarray_plotly.config import DEFAULT_SLOT_ORDERS, _options
 
 if TYPE_CHECKING:
-    from collections.abc import Hashable, Sequence
-
     import pandas as pd
     from xarray import DataArray
 
@@ -26,6 +29,15 @@ auto = _AUTO()
 
 SlotValue = _AUTO | str | None
 """Type alias for slot values: auto, explicit dimension name, or None (skip)."""
+
+Colors = str | Sequence[str] | Mapping[str, str] | None
+"""Type alias for unified colors parameter.
+
+- str: Named color scale (e.g., "Viridis" for continuous, "D3" for discrete)
+- Sequence[str]: List of colors for discrete sequence (e.g., ["red", "blue"])
+- Mapping[str, str]: Explicit mapping of values to colors (e.g., {"A": "red"})
+- None: Use Plotly defaults
+"""
 
 # Re-export for backward compatibility
 SLOT_ORDERS = DEFAULT_SLOT_ORDERS
@@ -227,3 +239,60 @@ def build_labels(
         labels[value_col] = get_label(darray, "value")
 
     return labels
+
+
+@functools.cache
+def _get_qualitative_scale_names() -> frozenset[str]:
+    """Get all named qualitative (discrete) color scales from Plotly."""
+    return frozenset(
+        name
+        for name in dir(px.colors.qualitative)
+        if not name.startswith("_") and name[0].isupper()
+    )
+
+
+def resolve_colors(colors: Colors, px_kwargs: dict[str, Any]) -> dict[str, Any]:
+    """Map unified `colors` parameter to appropriate Plotly px_kwargs.
+
+    Direct color_* kwargs take precedence and trigger a warning if
+    colors was also specified.
+
+    Args:
+        colors: Unified color specification (str, list, dict, or None).
+        px_kwargs: Existing kwargs to pass to Plotly Express.
+
+    Returns:
+        Updated px_kwargs with color parameters injected.
+    """
+    if colors is None:
+        return px_kwargs
+
+    # Check if any color_* kwarg is present - these take precedence
+    color_kwargs = [k for k in px_kwargs if k.startswith("color_")]
+    if color_kwargs:
+        warnings.warn(
+            f"`colors` parameter ignored because {color_kwargs[0]!r} "
+            f"was explicitly provided in px_kwargs.",
+            UserWarning,
+            stacklevel=3,
+        )
+        return px_kwargs
+
+    px_kwargs = px_kwargs.copy()
+
+    if isinstance(colors, str):
+        # Check if it's a qualitative (discrete) palette name
+        if colors in _get_qualitative_scale_names():
+            px_kwargs["color_discrete_sequence"] = getattr(px.colors.qualitative, colors)
+        else:
+            # Assume continuous scale
+            px_kwargs["color_continuous_scale"] = colors
+    elif isinstance(colors, Mapping):
+        px_kwargs["color_discrete_map"] = dict(colors)
+    elif isinstance(colors, Sequence):
+        px_kwargs["color_discrete_sequence"] = list(colors)
+    else:
+        msg = f"`colors` must be str, list, dict, or None, got {type(colors).__name__}"
+        raise TypeError(msg)
+
+    return px_kwargs
