@@ -1,11 +1,13 @@
 name: Docs
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:  # Manual trigger
   workflow_run:
-    workflows: ["Release"]
+    workflows: ["Release (Manual)", "Release Please"]
     types: [completed]
 
 permissions:
