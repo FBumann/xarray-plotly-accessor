@@ -82,7 +82,6 @@ def line(
     -------
     plotly.graph_objects.Figure
     """
-    px_kwargs = resolve_colors(colors, px_kwargs)
     slots = assign_slots(
         list(darray.dims),
         "line",
@@ -94,6 +93,7 @@ def line(
         facet_row=facet_row,
         animation_frame=animation_frame,
     )
+    px_kwargs = resolve_colors(colors, px_kwargs, color_dim=slots.get("color"), darray=darray)
 
     df = to_dataframe(darray)
     value_col = get_value_col(darray)
@@ -329,7 +329,6 @@ def fast_bar(
     -------
     plotly.graph_objects.Figure
     """
-    px_kwargs = resolve_colors(colors, px_kwargs)
     slots = assign_slots(
         list(darray.dims),
         "fast_bar",
@@ -339,6 +338,7 @@ def fast_bar(
         facet_row=facet_row,
         animation_frame=animation_frame,
     )
+    px_kwargs = resolve_colors(colors, px_kwargs, color_dim=slots.get("color"), darray=darray)
 
     df = to_dataframe(darray)
     value_col = get_value_col(darray)
@@ -410,7 +410,6 @@ def area(
     -------
     plotly.graph_objects.Figure
     """
-    px_kwargs = resolve_colors(colors, px_kwargs)
     slots = assign_slots(
         list(darray.dims),
         "area",
@@ -421,6 +420,7 @@ def area(
         facet_row=facet_row,
         animation_frame=animation_frame,
     )
+    px_kwargs = resolve_colors(colors, px_kwargs, color_dim=slots.get("color"), darray=darray)
 
     df = to_dataframe(darray)
     value_col = get_value_col(darray)
@@ -487,7 +487,6 @@ def box(
     -------
     plotly.graph_objects.Figure
     """
-    px_kwargs = resolve_colors(colors, px_kwargs)
     slots = assign_slots(
         list(darray.dims),
         "box",
@@ -498,6 +497,7 @@ def box(
         facet_row=facet_row,
         animation_frame=animation_frame,
     )
+    px_kwargs = resolve_colors(colors, px_kwargs, color_dim=slots.get("color"), darray=darray)
 
     df = to_dataframe(darray)
     value_col = get_value_col(darray)
@@ -746,7 +746,6 @@ def pie(
     -------
     plotly.graph_objects.Figure
     """
-    px_kwargs = resolve_colors(colors, px_kwargs)
     slots = assign_slots(
         list(darray.dims),
         "pie",
@@ -754,6 +753,7 @@ def pie(
         facet_col=facet_col,
         facet_row=facet_row,
     )
+    px_kwargs = resolve_colors(colors, px_kwargs, color_dim=slots.get("names"), darray=darray)
 
     df = to_dataframe(darray)
     value_col = get_value_col(darray)

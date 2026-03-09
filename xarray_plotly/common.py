@@ -13,7 +13,7 @@ from xarray_plotly.config import DEFAULT_SLOT_ORDERS, _options
 
 if TYPE_CHECKING:
     import pandas as pd
-    from xarray import DataArray
+    from xarray import DataArray, Dataset
 
 
 class _AUTO:
@@ -251,7 +251,21 @@ def _get_qualitative_scale_names() -> frozenset[str]:
     )
 
 
-def resolve_colors(colors: Colors, px_kwargs: dict[str, Any]) -> dict[str, Any]:
+def _sample_colorscale(name: str, n: int) -> list[str]:
+    """Sample *n* evenly-spaced colors from a named Plotly colorscale."""
+    scale = px.colors.get_colorscale(name)
+    samplepoints = [i / max(n - 1, 1) for i in range(n)]
+    result: list[str] = px.colors.sample_colorscale(scale, samplepoints)
+    return result
+
+
+def resolve_colors(
+    colors: Colors,
+    px_kwargs: dict[str, Any],
+    *,
+    color_dim: Hashable | None = None,
+    darray: DataArray | Dataset | None = None,
+) -> dict[str, Any]:
     """Map unified `colors` parameter to appropriate Plotly px_kwargs.
 
     Direct color_* kwargs take precedence and trigger a warning if
@@ -260,6 +274,14 @@ def resolve_colors(colors: Colors, px_kwargs: dict[str, Any]) -> dict[str, Any]:
     Args:
         colors: Unified color specification (str, list, dict, or None).
         px_kwargs: Existing kwargs to pass to Plotly Express.
+        color_dim: Dimension name used for discrete color grouping.
+            When provided together with *darray*, a continuous colorscale
+            string is sampled into a discrete sequence whose length
+            matches the number of coordinates along this dimension.
+            Use for chart types that only accept discrete color
+            parameters (line, area, box, pie).
+        darray: Source DataArray or Dataset; used with *color_dim* to
+            determine the number of discrete colors to sample.
 
     Returns:
         Updated px_kwargs with color parameters injected.
@@ -284,6 +306,10 @@ def resolve_colors(colors: Colors, px_kwargs: dict[str, Any]) -> dict[str, Any]:
         # Check if it's a qualitative (discrete) palette name
         if colors in _get_qualitative_scale_names():
             px_kwargs["color_discrete_sequence"] = getattr(px.colors.qualitative, colors)
+        elif color_dim is not None and darray is not None:
+            # Sample from continuous scale into a discrete sequence
+            n = darray.sizes[color_dim]
+            px_kwargs["color_discrete_sequence"] = _sample_colorscale(colors, n)
         else:
             # Assume continuous scale
             px_kwargs["color_continuous_scale"] = colors
