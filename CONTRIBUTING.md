@@ -42,11 +42,8 @@ uv run ruff format .
 
 ## Releases
 
-Releases are automated via GitHub Actions. Version is determined from git tags via setuptools_scm.
+Releases are fully automated via [Release Please](https://github.com/googleapis/release-please).
 
-To create a release:
-
-1. Tag: `git tag v0.1.0`
-2. Push: `git push && git push --tags`
-
-The CI will automatically publish to PyPI and deploy updated docs.
+1. Merge PRs to `main` using [conventional commit](https://www.conventionalcommits.org/) prefixes (`feat:`, `fix:`, etc.)
+2. Release Please automatically creates/updates a release PR with changelog and version bump
+3. Merge the release PR to publish to PyPI and deploy updated docs
